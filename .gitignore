@@ -1,0 +1,19 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Temporary writing artifacts
+~$*
+*.tmp
+*.bak
+
+# Generated exports
+exports/
+*.pdf
+*.docx
+
+# Local caches
+.cache/
