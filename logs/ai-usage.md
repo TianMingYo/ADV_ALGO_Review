@@ -9,9 +9,16 @@
 - 使用工具：
 - 提问内容：
 - AI 输出摘要：
-- 我采纳了什么：
-- 我没有采纳什么：
-- 人工核验方式：
-- 相关 commit：
 
+### 日期：2026-06-25
+
+- 使用工具：Codex
+- 提问内容：帮我翻译 abstract 和 related work。
+- AI 输出摘要：见 `drafts/abstract-zh.tex` 和 `drafts/related-work-zh.tex`。
+
+### 日期：2026-06-26
+
+- 使用工具：Codex
+- 提问内容：帮我翻译第三部分的概念。
+- AI 输出摘要：见 `drafts/section3-zh.tex`。
 

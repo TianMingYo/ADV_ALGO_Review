@@ -1,0 +1,22 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\begin{document}
+
+\section*{相关工作}
+\subsection*{最短路算法}
+Dijkstra 算法是单源最短路问题的基础算法。原始实现的时间复杂度是 $O(n^2)$；如果用普通堆来维护候选顶点，在稀疏图上可以做到 $O(m\log n)$。Fredman 和 Tarjan 进一步用 Fibonacci heap 把上界改善到 $O(m+n\log n)$。如果要求输出顶点按距离排序，这个复杂度已经非常强；但如果只关心距离值本身，近期还有更快的算法，这说明 Dijkstra 并不是在所有任务定义下都绝对最优。
+
+\subsection*{universal optimality 与 instance optimality}
+“universal optimality” 这个说法最早来自分布式算法领域。作者把它推广到顺序图算法中，并指出它和 instance optimality 有关系，但要求更弱。instance optimality 虽然是 beyond-worst-case 分析中的理想目标之一，但通常太强，很难直接满足。
+
+对本文关心的距离顺序问题来说，严格的 instance optimality 会遇到一些不合适的平凡反例：在某个具体实例上，如果算法只需要选出一个正确的距离顺序再去验证，时间就可能非常短。因此，作者需要一个稍微放松、但仍然有意义的最优性概念。
+
+\subsection*{数据结构中的 beyond-worst-case 结果}
+堆和自调整数据结构也有很多 beyond-worst-case 的研究。比如 splay tree 有著名的 working-set 性质，堆也有人尝试建立类似的结论。Iacono 早期研究了堆的 working-set bound，后来又有一些更强的结果。
+
+不过，这些结果常常不支持 \texttt{decrease-key}，而 Dijkstra 恰恰需要大量 \texttt{decrease-key} 操作，所以这些工作不能直接拿来用。本文正是因为这个原因，才需要重新设计适合 Dijkstra 的堆分析和堆实现。
+
+\subsection*{带部分信息的排序}
+这篇论文公开预印本之后，其中一些思想又被作者和合作者用于“带部分比较信息的排序”问题。这个问题可以理解为：先有一部分比较结果，再通过额外比较恢复完整顺序。它和本文的距离顺序问题很接近，都属于利用部分结构信息来降低后续代价的方向。
+
+\end{document}
