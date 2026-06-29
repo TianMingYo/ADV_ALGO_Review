@@ -1,0 +1,78 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\begin{document}
+
+\section*{第四部分：Dijkstra 算法}
+
+\subsection*{4.1 高层描述}
+
+这一节重新形式化 Dijkstra 算法。输入是一张带源点 \(s\) 的图，每条弧都有非负长度。算法为每个顶点 \(v\) 维护一个当前距离 \(d(v)\)，表示目前已经找到的从 \(s\) 到 \(v\) 的最短路径长度；如果还没有找到到达 \(v\) 的路径，则设为无穷大。
+
+每个顶点有三种状态：
+
+\begin{itemize}
+  \item unlabeled：还没有被发现；
+  \item labeled：已经发现，但还没有最终确定；
+  \item scanned：已经扫描完成，距离已经确定。
+\end{itemize}
+
+初始时，\(d(s)=0\)，源点 \(s\) 是 labeled，其余顶点都是 unlabeled。算法反复选择当前距离最小的 labeled 顶点 \(v\)，将其标记为 scanned，并检查从 \(v\) 出发的每条弧 \(vw\)。如果 \(w\) 还没有被发现，就设置 \(d(w)=d(v)+c(vw)\)，并把 \(w\) 标记为 labeled；如果 \(w\) 已经是 labeled，且经过 \(v\) 能得到更短的路径，就更新 \(d(w)\)。
+
+Dijkstra 算法的标准正确性结论是：当一个顶点被扫描时，它的当前距离就等于真实距离。也就是说，扫描顺序是按照真实距离非递减进行的。
+
+\subsection*{Lemma 4.1}
+
+这一引理说明：Dijkstra 算法扫描顶点的顺序是一个真实距离顺序。
+
+证明思路很直接。Dijkstra 本来就按真实距离非递减扫描顶点；还需要证明这个扫描顺序满足第三节中“距离顺序”的结构条件。任意非源点 \(w\) 在被扫描前，一定先被某条弧 \(vw\) 发现，而 \(v\) 已经在 \(w\) 之前被扫描。因此每个非源点都有一条来自前面顶点的入弧。根据 Lemma 3.1，这个顺序就是距离顺序。结合真实距离非递减，就得到它是真实距离顺序。
+
+这一点很重要，因为论文后面真正分析的是“找到真实距离顺序”的复杂度，而不是只分析距离值本身。
+
+\subsection*{三个问题的关系}
+
+Dijkstra 算法实际上同时做了三件事：
+
+\begin{itemize}
+  \item 计算从源点出发的真实距离；
+  \item 构造一棵最短路树；
+  \item 产生一个真实距离顺序。
+\end{itemize}
+
+论文强调，三者里最难的是“找到真实距离顺序”。如果已经给出了真实距离顺序，那么可以在线性时间内找出前向弧，并沿着这个顺序处理顶点，从而恢复真实距离和最短路树。因此后面给出的紧下界主要针对距离顺序问题。
+
+这也解释了为什么论文会反复讨论 true distance order：它是 Dijkstra 输出中最能体现问题难度的部分。
+
+\subsection*{4.2 用堆实现}
+
+Dijkstra 可以看成把最短路问题转化成一个优先队列问题。堆里的元素是已经 labeled 但还没有 scanned 的顶点，键值就是当前距离 \(d(v)\)。
+
+每一步扫描时：
+
+\begin{itemize}
+  \item 用 \texttt{delete-min} 取出当前距离最小的顶点；
+  \item 如果扫描弧时发现一个新顶点，就执行 \texttt{insert}；
+  \item 如果扫描弧时让某个 labeled 顶点的当前距离变小，就执行 \texttt{decrease-key}。
+\end{itemize}
+
+整个算法中，每个顶点最多插入一次、删除一次；每条弧最多导致一次 \texttt{decrease-key}。因此，除堆操作外，算法本身只需要 \(O(m)\) 时间。
+
+\subsection*{Lemma 4.2}
+
+这一引理给出 Dijkstra 中非堆比较次数和 \texttt{decrease-key} 次数的上界。设 \(F\) 是第三节定义的最大前向弧数，则 Dijkstra 运行过程中，堆操作之外的比较次数至多为
+\[
+F-n+1,
+\]
+\texttt{decrease-key} 的次数也至多为
+\[
+F-n+1.
+\]
+
+证明思路是：按照扫描顺序看，Dijkstra 的扫描顺序是一个距离顺序。只有当一条弧指向已经 labeled 的顶点时，算法才需要比较是否能改进距离；这样的弧一定是该顺序下的前向弧。另一方面，有 \(n-1\) 条前向弧负责第一次发现顶点，只会导致插入，不会导致堆外比较或 \texttt{decrease-key}。所以剩下最多 \(F-n+1\) 条前向弧会产生这些额外操作。
+
+\subsection*{堆实现的意义}
+
+原始 Dijkstra 用数组实现优先队列，适合稠密图，但在稀疏图上较慢。普通隐式堆可以做到 \(O(m\log n)\)。Fibonacci heap 把 Dijkstra 的最坏情况复杂度改进到 \(O(m+n\log n)\)。
+
+不过，本文要证明的是更强的 universal optimality，因此普通最坏情况界还不够。作者需要一种更细的堆界，也就是 working-set bound。直观上，某个元素越“新近”进入堆，它被删除时应该越便宜。本文后面会构造满足这种性质、同时支持 Dijkstra 所需操作的堆。
+
+\end{document}
