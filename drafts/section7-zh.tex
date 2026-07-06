@@ -1,0 +1,109 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\begin{document}
+
+\section*{第七部分：Dijkstra 算法的效率}
+
+这一节分析 Dijkstra 算法在使用满足 working-set bound 的堆时，最坏情况下的运行时间和比较次数。
+
+本节得到两个上界：
+
+\begin{itemize}
+  \item 时间复杂度为 \(O(m+\log D)\)；
+  \item 比较次数为 \(O(F+\log D)\)。
+\end{itemize}
+
+其中，\(D\) 是图中距离顺序的数量，\(F\) 是第三节定义的最大前向弧数。时间上界 \(O(m+\log D)\) 正好匹配第六节 Theorem 6.5 的时间下界。因此，普通 Dijkstra 配合合适的 working-set heap，已经可以在时间意义下达到 universal optimality。
+
+不过，比较次数上界 \(O(F+\log D)\) 和第六节的比较下界 \(O(F-n+1+\log D)\) 之间还差一个和 \(n\) 有关的加性项。所以后面第八节和第九节会继续增强 Dijkstra，使它在比较次数上也匹配下界。
+
+\subsection*{工作集堆带来的分析方式}
+
+如果堆满足 working-set bound，那么每次 \texttt{insert} 和 \texttt{decrease-key} 都只需要 \(O(1)\) 摊还时间和比较次数。根据第四节对 Dijkstra 的堆实现分析，以及 Lemma 4.2，Dijkstra 的总时间可以写成：
+
+\[
+O(m) + \texttt{delete-min 的总代价}.
+\]
+
+比较次数也可以写成：
+
+\[
+O(F) + \texttt{delete-min 的比较次数}.
+\]
+
+因此，第七节真正需要解决的问题是：如何控制所有 \texttt{delete-min} 操作的总代价。
+
+working-set bound 说明，如果被删除元素 \(x\) 的工作集大小是 \(W(x)\)，那么删除它的代价大约是 \(O(\log W(x))\)。所以问题进一步变成：如何证明
+
+\[
+\sum_v \log W(v)
+\]
+
+足够小。第七节的关键结论就是这个和可以被 \(O(\log D)\) 控制。
+
+\subsection*{Lemma 7.1 的作用}
+
+作者引用了 Van der Hoog 等人的一个结果。这个结果大意是：给定一组整数区间，可以定义一个区间 DAG。如果一个区间完全在另一个区间之前，就在两个区间之间连一条有向边。设这个 DAG 的拓扑序数量为 \(D(I)\)，那么这些区间长度的对数和满足：
+
+\[
+\sum_i \log(b_i-a_i+1)=O(\log D(I)).
+\]
+
+直观上，如果很多区间都很长，那么这些区间之间的相对顺序就有更多自由度，DAG 的拓扑序数量也会变多。因此，区间长度的对数和可以由拓扑序数量的对数控制。
+
+这一引理是第七节的技术桥梁：它把 working-set size 转成区间长度，再把区间长度和 possible orders 联系起来。
+
+\subsection*{Lemma 7.3}
+
+Lemma 7.3 说明：在一次 Dijkstra 运行中，设 \(W(v)\) 是顶点 \(v\) 的 working-set size，那么
+
+\[
+\sum_{v\in V}\log W(v)=O(\log D).
+\]
+
+证明思路如下。
+
+先按照顶点被插入堆的顺序记为
+
+\[
+[v_1,v_2,\ldots,v_n].
+\]
+
+对每个顶点 \(v_i\)，从它被插入堆开始，到它被 \texttt{delete-min} 删除为止，这期间插入堆的顶点编号形成一个区间 \([a_i,b_i]\)，其中 \(a_i=i\)。这个区间长度正好就是 \(W(v_i)\)。
+
+然后，作者用这些区间构造一个区间 DAG \(I\)。如果一个区间结束在另一个区间开始之前，就在它们之间建立顺序约束。
+
+接着看 Dijkstra 运行过程中生成的搜索树 \(T\)。每个非源点 \(v_i\) 第一次被发现时，都是因为某条弧 \(u_i v_i\) 被处理。所有这些发现弧构成一棵以 \(s\) 为根的生成树。
+
+关键观察是：区间 DAG \(I\) 的每个拓扑序，都可以对应到搜索树 \(T\) 的一个拓扑序。原因是，如果树中有一条弧 \(v_i v_j\)，那么 \(v_i\) 一定在 \(v_j\) 插入堆之前就已经被删除，所以对应区间满足 \(b_i<a_j\)，在区间 DAG 中也有相同方向的约束。
+
+根据 Lemma 3.1，搜索树 \(T\) 的每个拓扑序都是原图 \(G\) 的一个距离顺序。因此，原图的距离顺序数量 \(D\) 至少和区间 DAG 的拓扑序数量一样多。再用 Lemma 7.1，就得到：
+
+\[
+\sum_{v\in V}\log W(v)=O(\log D).
+\]
+
+\subsection*{Theorem 7.4}
+
+由 Lemma 7.3 可知，所有 \texttt{delete-min} 的比较次数是
+
+\[
+O(n+\log D).
+\]
+
+再结合前面部分的分析，Dijkstra 使用满足 working-set bound 的堆时：
+
+\begin{itemize}
+  \item 在有向图上，运行时间为 \(O(m+\log D)\)，比较次数为 \(O(F+\log D)\)；
+  \item 在无向图上，比较次数为 \(O(m+\log D)\)。
+\end{itemize}
+
+因此，Dijkstra 在时间复杂度上是 universally optimal 的；在比较次数上，它距离最优只差一个和 \(n\) 有关的加性项。
+
+\subsection*{这一节的意义}
+
+第六节已经证明了时间下界是 \(\Omega(m+\log D)\)。第七节证明，Dijkstra 如果用合适的 working-set heap，就能达到 \(O(m+\log D)\)。这说明普通 Dijkstra 在时间模型下已经是 universal optimal 的。
+
+但是，第七节还没有完全解决比较次数问题。它得到的是 \(O(F+\log D)\)，而第六节的比较下界是 \(\Omega(F-n+1+\log D)\)。这就是后面第八节和第九节继续修改 Dijkstra 的原因。
+
+\end{document}

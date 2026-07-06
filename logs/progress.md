@@ -17,3 +17,9 @@
 
 * 在 Codex 辅助下初读 section 4~6，理解了理论基础。
 * 整理了相关的 note 与等待细读的问题。
+
+## 2026-07-06
+
+* 在 Codex 辅助下初读 section 7，阅读第 7 节，理解 Dijkstra 算法如何匹配 Section 6 给出的时间下界。
+* 理解了 working-set heap 在分析中的作用：`insert` 和 `decrease-key` 比较便宜，关键是控制所有 `delete-min` 的总代价。
+* 初步确认普通 Dijkstra 在 time model 下已经是 universally optimal。

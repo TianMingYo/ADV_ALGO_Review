@@ -27,3 +27,9 @@
 - 使用工具：Codex
 - 提问内容：帮我翻译Section4~6。
 - AI 输出摘要：见 `drafts/section4-zh.tex`、`drafts/section5-zh.tex`、`drafts/section6-zh.tex`。
+
+### 日期：2026-07-06
+
+- 使用工具：Codex
+- 提问内容：帮我翻译Section7。
+- AI 输出摘要：见 `drafts/section7-zh.tex`。
