@@ -33,3 +33,9 @@
 - 使用工具：Codex
 - 提问内容：帮我翻译Section7。
 - AI 输出摘要：见 `drafts/section7-zh.tex`。
+
+### 日期：2026-07-07
+
+- 使用工具：Codex
+- 提问内容：帮我翻译Section8。
+- AI 输出摘要：见 `drafts/section8-zh.tex`。

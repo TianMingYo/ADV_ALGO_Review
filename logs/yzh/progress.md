@@ -1,0 +1,31 @@
+# 过程日志
+
+## 2026-06-22
+
+* 初始化 Git 仓库、检索论文。
+
+## 2026-06-25
+
+* 在 Codex 辅助下初读 Abstract、Related Work。
+
+## 2026-06-26
+
+* 在 Codex 辅助下初读 Concept 部分。
+* 整理 Concept 部分的相关概念。
+
+## 2026-06-29
+
+* 在 Codex 辅助下初读 section 4~6，理解了理论基础。
+* 整理了相关的 note 与等待细读的问题。
+
+## 2026-07-06
+
+* 在 Codex 辅助下初读 section 7，理解 Dijkstra 算法如何匹配 Section 6 给出的时间下界。
+* 理解了 working-set heap 在分析中的作用：`insert` 和 `decrease-key` 比较便宜，关键是控制所有 `delete-min` 的总代价。
+* 初步确认普通 Dijkstra 在 time model 下已经是 universally optimal。
+
+## 2026-07-07
+* 在 Codex 辅助下初读 section 8，理解 Dijkstra with lookahead 如何处理 bottleneck。
+* 整理了 section 8 note，记录 marked / unmarked bottleneck、lookahead 的算法直觉和正确性思路。
+* 初步确认 Dijkstra with lookahead 可以达到 `O(F - n + 1 + log D)` 比较次数。
+* 整理项目结构，区分每个人阅读的进度。
