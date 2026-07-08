@@ -1,0 +1,92 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\begin{document}
+
+\section*{第九部分：递归版 Dijkstra 算法}
+
+第九节给出另一种对 Dijkstra 的增强版本，也能在时间和比较次数上达到 universal optimality。第八节的方法是 Dijkstra with lookahead，它单独维护一段瓶颈点；第九节的方法则是 recursive Dijkstra，也就是在遇到瓶颈点时启动新的 Dijkstra 运行。
+
+这一节的核心思想是：优先计算瓶颈点的真实距离。瓶颈点按层数有自然顺序，并且根据 Lemma 8.2，一个瓶颈点支配所有更高层的顶点，包括更高层的其他瓶颈点。因此，可以先从源点 \(s\) 开始运行 Dijkstra；当这个运行即将扫描下一个瓶颈点 \(v\) 时，就暂停当前运行，以 \(v\) 为新的起点开启一个新的 Dijkstra 运行。这样不断递归，直到所有瓶颈点的真实距离都被确定。
+
+确定所有瓶颈点之后，还需要计算非瓶颈点的真实距离，并把所有顶点按距离非递减顺序排好。算法会先完成最高层瓶颈点对应的 Dijkstra 运行，然后逐层向下恢复之前暂停的运行，直到最初从源点 \(s\) 出发的运行也完成。较高层运行过程中，如果发现能改进较低层某个堆中顶点的距离，也会对相应堆执行 \texttt{decrease-key}。这正是保证整体最短路计算正确所需要的更新。
+
+\subsection*{9.1 Recursive Dijkstra}
+
+Recursive Dijkstra 使用多个堆。每个以瓶颈点 \(u\) 为起点的 Dijkstra 运行都有自己的堆 \(H(u)\)。算法不需要 meld 操作，因此仍然可以使用第十节要构造的 working-set heap。
+
+算法初始化时：
+
+\begin{itemize}
+  \item 找出所有瓶颈点；
+  \item 设置 \(d(s)=0\)，其他顶点当前距离为无穷大；
+  \item 所有顶点初始为 unlabeled；
+  \item 列表 \(L\) 先放入所有瓶颈点，顺序按层数递增。
+\end{itemize}
+
+然后调用递归过程 \(\text{Dijkstra}(s)\)。递归过程 \(\text{Dijkstra}(u)\) 的大致形式是：
+
+\begin{itemize}
+  \item 初始化一个空堆 \(H(u)\)；
+  \item 扫描 \(u\)；
+  \item 当 \(H(u)\) 非空时，执行 \texttt{delete-min} 得到顶点 \(v\)；
+  \item 如果 \(v\) 是瓶颈点，则递归调用 \(\text{Dijkstra}(v)\)；
+  \item 如果 \(v\) 不是瓶颈点，则扫描 \(v\)。
+\end{itemize}
+
+扫描顶点时，算法和普通 Dijkstra 类似：如果发现一个新顶点，就设置当前距离和父亲，并插入当前运行对应的堆；如果发现更短路径，就更新当前距离、更新父亲，并在该顶点所在的堆中执行 \texttt{decrease-key}。
+
+和第八节不同的是，recursive Dijkstra 还要维护最终的距离顺序列表 \(L\)。瓶颈点一开始已经按层数放进 \(L\)。当一个非瓶颈点 \(w\) 被扫描后，算法根据它的父亲 \(p(w)\) 在 \(L\) 中做局部搜索，把 \(w\) 插入到合适位置，使 \(L\) 仍按真实距离非递减排列。为了让这种局部插入高效，论文使用 finger search tree。它支持从一个已知位置附近插入新元素，若插入位置距离参考点 \(k\) 个位置，则代价为 \(O(1+\log k)\)。
+
+\subsection*{9.2 正确性}
+
+Theorem 9.1 说明：recursive Dijkstra 是正确的。证明要说明两件事：
+
+\begin{itemize}
+  \item 算法计算出的当前距离最终都是真实距离；
+  \item 算法构造出的列表 \(L\) 是一个距离顺序。
+\end{itemize}
+
+先看真实距离。设瓶颈点按层数递增排列为 \(v_1,v_2,\ldots,v_b\)。根据 Lemma 8.2，低层瓶颈点支配高层瓶颈点。算法第一阶段会沿着瓶颈点顺序不断递归：从 \(v_i\) 出发的运行，在即将扫描 \(v_{i+1}\) 时暂停，并启动以 \(v_{i+1}\) 为源的运行。这个过程保证每个瓶颈点被启动为新源时，它的真实距离已经知道。
+
+之后算法从最高层瓶颈点对应的运行开始完成，再逐层向低层恢复。证明用归纳说明：每次从某个堆中删除并扫描顶点时，该顶点的当前距离就是真实距离。直观上，这仍然是 Dijkstra 正确性证明的变体，只是多个堆和多个运行交错进行。由于瓶颈点支配结构保证了运行之间的先后关系，较高层运行对较低层堆中的更新也不会破坏非递减删除的性质。
+
+再看列表 \(L\)。对非瓶颈点，算法在它被扫描后，将它插入到父亲 \(p(v)\) 后面合适的位置，因此可以保持非递减距离顺序。对瓶颈点，由于它们按层数递增放入 \(L\)，而低层瓶颈点支配高层瓶颈点，所以瓶颈点之间的顺序也是合理的。
+
+最后需要证明每个非源点都出现在其最短路树父亲之后。非瓶颈点是通过插入规则保证的；瓶颈点如果父亲也是瓶颈点，则父亲层数更低，已经在它之前；如果父亲不是瓶颈点，则沿最短路树往上找到最近的瓶颈祖先，可以说明父亲会被插在该瓶颈祖先之后、当前瓶颈点之前。于是 \(L\) 是最短路树的一个拓扑序，根据 Lemma 3.1，\(L\) 是距离顺序。
+
+\subsection*{9.3 效率}
+
+效率分析的目标是证明 recursive Dijkstra 也匹配前面的下界。
+
+首先，找出瓶颈点可以通过 BFS 在 \(O(m)\) 时间完成。设瓶颈点数量为 \(b\)。marked 瓶颈点的数量至多是 \((n-b)/2\)，因为每个 marked 瓶颈点的下一层至少有两个顶点，其中至少涉及非瓶颈点。
+
+对于 unmarked 瓶颈点，递归调用非常简单：它基本只是把下一层瓶颈点插入一个空堆、再删除出来、继续递归。这些操作不需要比较。因此，在比较次数分析中，真正需要考虑的主要是 marked 瓶颈点对应的递归运行。
+
+堆插入总时间是 \(O(n)=O(m)\)，比较次数是 \(O(n-b)\)。由 Lemma 8.1，\(n-b=O(\log D)\)。和前面一样，recursive Dijkstra 扫描出的顶点顺序是距离顺序，因此 \texttt{decrease-key} 次数至多是
+
+\[
+F-n+1.
+\]
+
+这些 \texttt{decrease-key} 总共贡献 \(O(F-n+1)\) 时间和比较。
+
+剩下两类代价需要单独控制：
+
+\begin{itemize}
+  \item 各个堆中的 \texttt{delete-min} 操作；
+  \item 向列表 \(L\) 中插入非瓶颈点时的搜索和插入。
+\end{itemize}
+
+Lemma 9.2 控制 \texttt{delete-min} 的总代价。证明思路和第七节类似：把 recursive Dijkstra 生成的搜索树按 marked bottleneck 切成若干子树。对每个 marked bottleneck 对应的 Dijkstra 运行，都可以套用 Lemma 7.3 的 working-set 分析。所有这些子树的拓扑序数量相乘后，仍然受原图距离顺序数量 \(D\) 控制，因此所有 \texttt{delete-min} 的摊还时间和比较次数是 \(O(\log D)\)。
+
+Lemma 9.3 控制向 \(L\) 中插入非瓶颈点的代价。算法使用 finger search tree，从父亲 \(p(v)\) 附近开始搜索插入位置。如果插入位置距离父亲 \(k\) 个位置，代价是 \(O(1+\log k)\)。作者将每次插入对应到一个区间，再使用 Lemma 7.1 的区间 DAG 工具，证明所有插入搜索的总代价也是 \(O(\log D)\)。
+
+最后，Lemma 9.2 和 Lemma 9.3 合并得到 Theorem 9.5：recursive Dijkstra 的运行时间和比较次数都在常数因子内达到最优。也就是说，它和第八节的 Dijkstra with lookahead 一样，在 time model 和 comparison model 下都达到 universal optimality。
+
+\subsection*{这一节的意义}
+
+第八节已经给出了一个 comparison-optimal 的 Dijkstra with lookahead。第九节提供了另一种达到相同目标的方式：用递归运行优先处理 bottleneck，再通过 finger search tree 维护最终的距离顺序。
+
+直观地说，第八节是“把瓶颈点放到数组 \(B\) 里向前看”，第九节是“遇到瓶颈点就开启新的 Dijkstra 子运行”。两者都利用了同一个结构事实：瓶颈点支配更高层顶点，因此瓶颈点的真实距离可以优先确定，并且这种优先处理不会破坏 Dijkstra 的正确性。
+
+\end{document}

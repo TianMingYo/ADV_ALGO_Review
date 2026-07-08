@@ -29,3 +29,7 @@
 * 整理了 section 8 note，记录 marked / unmarked bottleneck、lookahead 的算法直觉和正确性思路。
 * 初步确认 Dijkstra with lookahead 可以达到 `O(F - n + 1 + log D)` 比较次数。
 * 整理项目结构，区分每个人阅读的进度。
+
+## 2026-07-08
+* 在 Codex 辅助下初读 section 9，理解 recursive dijkstra 解决的问题和对 bottleneck 的不同处理方法。
+* 在 ChatGPT 辅助下学习文中的 finger search tree 数据结构，并理解为什么该章需要使用该数据结构。
