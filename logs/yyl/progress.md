@@ -6,3 +6,15 @@
 - 确认本文不是提出新的最短路算法，而是重新分析 Dijkstra 在 distance order problem 上的 universal optimality。
 - 初步记录 universal optimality 与 worst-case optimality、instance optimality 的区别。
 - 关注引言中的链式示例，理解普通 Fibonacci heap 分析为什么不能反映“刚插入就删除”的局部性。
+
+## 2026-07-08
+
+- 阅读 Related Work 和第 3 节，整理 distance order、true distance order、forward arc、dominator、useless arc、level、bottleneck 等定义。
+- 对 Lemma 3.1 做了重点标注：一个顶点全序是 distance order 当且仅当除源点外每个顶点都有来自前面顶点的入弧。
+- 记录 `D` 表示 distance order 数量，`F` 表示某个 distance order 中前向弧数的最大值。
+
+## 2026-07-09
+
+- 阅读第 4 节，重新理解 Dijkstra 的三个输出：最短距离、最短路树和 true distance order。
+- 整理堆实现中 `insert`、`decrease-key`、`delete-min` 对复杂度的影响。
+- 理解 Lemma 4.2 中 `F - n + 1` 的来源：`n - 1` 条前向弧负责首次发现顶点，剩余前向弧才可能触发额外比较和 `decrease-key`。
