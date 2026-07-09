@@ -33,3 +33,7 @@
 ## 2026-07-08
 * 在 Codex 辅助下初读 section 9，理解 recursive dijkstra 解决的问题和对 bottleneck 的不同处理方法。
 * 在 ChatGPT 辅助下学习文中的 finger search tree 数据结构，并理解为什么该章需要使用该数据结构。
+
+## 2026-07-09
+* 在 Codex 辅助下初读 section 10，理解在前文铺垫下我们需要一个怎样的 heap，然后如何实现这样的一个 heap。
+* 在 ChatGPT 辅助下学习该堆的实现，梳理该数据结构的原理，考虑如何写进 review 里。

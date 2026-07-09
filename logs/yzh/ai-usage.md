@@ -272,3 +272,9 @@ O(log d)
 
 [1]: https://cs.au.dk/~gerth/papers/finger05.pdf?utm_source=chatgpt.com "Finger Search Trees - Aarhus Universitet"
 [2]: https://cs.au.dk/~gerth/papers/sosa25.pdf?utm_source=chatgpt.com "Pure Binary Finger Search Trees Pu - cs.au.dk"
+
+### 日期：2026-07-09
+
+- 使用工具：Codex
+- 提问内容：帮我翻译Section10。
+- AI 输出摘要：见 `drafts/paper-zh/section10-zh.tex`。

@@ -1,0 +1,166 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\begin{document}
+
+\section*{第十部分：满足 Working-Set Bound 的堆}
+
+第十节完成整篇论文最后一个技术任务：构造一种堆，使它具有前面算法分析所需要的 working-set bound。具体来说，这个堆需要支持 \texttt{make-heap}、\texttt{find-min}、\texttt{insert}、\texttt{decrease-key}、\texttt{delete-min}，不需要支持 \texttt{meld} 作为外部操作；除 \texttt{delete-min} 外，每个操作需要 \(O(1)\) 摊还时间；删除元素 \(x\) 的 \texttt{delete-min} 操作需要 \(O(\log W(x))\) 摊还时间，其中 \(W(x)\) 是 \(x\) 的 working-set size。
+
+已有一些堆在不支持 \texttt{decrease-key} 的情况下可以做到 working-set bound，但 Dijkstra 需要大量 \texttt{decrease-key}，所以本文需要新的堆实现。
+
+\subsection*{10.1 高层结构}
+
+作者把最终构造的堆称为 outer heap。outer heap 不是一个单独的普通堆，而是由一串 inner heaps 组成：
+
+\[
+H_1,H_2,\ldots,H_k.
+\]
+
+每个 inner heap 都是一个 fast heap，比如 Fibonacci heap、hollow heap 或 rank-pairing heap。fast heap 的要求是：除 \texttt{delete-min} 外的操作为 \(O(1)\) 摊还时间，大小为 \(n\) 的堆上 \texttt{delete-min} 为 \(O(\log n)\) 摊还时间，并且内部支持 \(O(1)\) 摊还的 \texttt{meld}。
+
+outer heap 的关键想法是：按插入时间大致分层，新的元素放在前面的 inner heap 中，旧的元素放在后面的 inner heap 中。它保持如下顺序：
+
+\[
+i<j \quad \Rightarrow \quad H_i \text{ 中的元素都比 } H_j \text{ 中的元素后插入}.
+\]
+
+因此，如果一个元素在较后面的 \(H_i\) 中，那么它的 working set 至少包含很多更晚插入、位于前面 inner heaps 的元素。只要控制好各个 inner heap 的大小，删除 \(H_i\) 中元素所需的 \(O(\log |H_i|)\) 代价就可以由 \(\log W(x)\) 支付。
+
+插入一个新元素时，算法先创建一个临时的一元素堆 \(H_0\)。然后寻找最小的 \(j\)，使得 \(H_j\) 和 \(H_{j+1}\) 合并后的大小不超过阈值
+
+\[
+2^{2^{j+1}}.
+\]
+
+如果找到这样的 \(j\)，就把 \(H_j\) 和 \(H_{j+1}\) meld 到一起，成为新的 \(H_{j+1}\)，再把前面的堆整体重编号。如果找不到这样的 \(j\)，就只做重编号。这个规则的作用是让第 \(i\) 个 inner heap 的大小最多达到双指数级
+
+\[
+2^{2^i}.
+\]
+
+因此，inner heap 的数量非常少，至多是 \(1+\log\log n\) 级别。
+
+outer heap 的基本操作可以概括为：
+
+\begin{itemize}
+  \item \texttt{find-min}：找到包含全局最小键元素的 inner heap，再在其中执行 \texttt{find-min}；
+  \item \texttt{delete-min}：找到包含全局最小键元素的 inner heap，再在其中执行 \texttt{delete-min}；
+  \item \texttt{decrease-key}：先找到元素所在的 inner heap，再在该 inner heap 内执行 \texttt{decrease-key}；
+  \item \texttt{insert}：创建 \(H_0\)，按大小规则可能 meld 两个 inner heaps，并重编号。
+\end{itemize}
+
+因此还有两个实现问题：
+
+\begin{itemize}
+  \item 如何快速找到某个元素属于哪个 inner heap；
+  \item 如何快速找到哪个 inner heap 含有全局最小元素。
+\end{itemize}
+
+前者在 10.3 中用 union-find 解决，后者在 10.4 中用很短的 bit vector 解决。
+
+\subsection*{10.2 效率分析}
+
+插入规则维护三个核心不变量：
+
+\begin{itemize}
+  \item 小编号 inner heap 中的元素都比大编号 inner heap 中的元素后插入；
+  \item \(H_i\) 的大小始终有上界，大约是 \(2^{2^i}\)；
+  \item 如果某个 \(H_i\) 在插入过程中发生变化，那么它前一层附近已经积累了足够多的元素，可以为 working-set bound 提供支付来源。
+\end{itemize}
+
+Lemma 10.1 说明插入时间顺序不变量成立：如果 \(i<j\)，那么 \(H_i\) 中的每个元素都晚于 \(H_j\) 中的每个元素插入。
+
+Lemma 10.2 说明大小上界成立：
+
+\[
+|H_i|\le 2^{2^i}.
+\]
+
+Lemma 10.3 由此得到：如果 outer heap 总共插入过 \(n\) 个元素，那么 inner heap 数量至多是
+
+\[
+1+\log\log n.
+\]
+
+Lemma 10.4 和 Corollary 10.5 则把大小不变量转成 working-set 下界。大意是：当一个较后面的 \(H_i\) 获得新元素时，前面相邻的层中已经有足够多更晚插入的元素。因此，\(H_i\) 中元素的 working set 至少有双指数规模。这样，删除 \(H_i\) 中元素时，inner heap 的 \(\log |H_i|\) 代价就能被 \(\log W(x)\) 吸收。
+
+Theorem 10.6 是这一节的核心结论。它说：如果我们可以 \(O(1)\) 摊还地完成下面两件事：
+
+\begin{itemize}
+  \item 找到某个元素所在的 inner heap；
+  \item 找到包含全局最小键元素的 inner heap；
+\end{itemize}
+
+那么 outer heap 就具有 working-set bound。
+
+证明思路如下：
+
+\begin{itemize}
+  \item \texttt{decrease-key} 的代价是找到 inner heap 加上 fast heap 内部的 \(O(1)\) 摊还更新；
+  \item \texttt{delete-min} 删除 \(H_i\) 中元素时，fast heap 内部代价是 \(O(\log |H_i|)\)，而 \(H_i\) 的大小上界和 working-set 下界保证这个代价不超过 \(O(\log W(x))\)；
+  \item \texttt{insert} 可能会重编号和 meld 多个层，但这些代价可以摊还到被移动层里的元素上，总摊还代价为 \(O(1)\)。
+\end{itemize}
+
+\subsection*{10.3 维护元素属于哪个 inner heap}
+
+\texttt{decrease-key} 需要知道元素 \(x\) 当前在哪个 inner heap 里。由于插入时会不断 meld inner heaps，元素所属分组会发生合并。这正好是 union-find 问题。
+
+作者为每个 inner heap 维护一个元素集合，每个集合有一个 leader。inner heap 保存指向其集合 leader 的指针，leader 也保存指向对应 inner heap 的指针。这样，找到元素所在 inner heap 可以通过一次 \texttt{find} 完成；每次 meld 两个 inner heaps 时，对应地做一次 \texttt{unite}。
+
+普通 union-find 的摊还时间已经非常接近常数。论文进一步说明，在本文的堆应用中，如果每个插入的元素最终都会被删除，可以使用一个更简单的压缩树方案，并采用 linking by index：当合并 \(H_j\) 和 \(H_{j+1}\) 时，让 \(H_{j+1}\) 对应树的根成为新根。
+
+Lemma 10.7 说明：如果一个元素最终从 \(H_j\) 中被删除，那么它在堆中期间所有 \texttt{find} 的额外总代价是每次 \(O(1)\) 加上 \(O(j)\)。而当 \(j\) 较大时，元素的 working-set size 也足够大，可以用删除时的 \(\log W(x)\) 支付这部分额外代价。
+
+如果考虑更一般的情况，即有些元素可能永远不被删除，论文可以使用 fixed-tree union 的已知数据结构来获得 \(O(1)\) 摊还时间。
+
+\subsection*{10.4 维护全局最小元素所在的 inner heap}
+
+第二个问题是：\texttt{find-min} 和 \texttt{delete-min} 如何快速知道哪个 inner heap 含有全局最小元素。
+
+作者引入 suffix minimum 的概念。一个 inner heap \(H_i\) 是 suffix minimum，如果它非空，并且它的最小键小于所有更大编号、非空 inner heaps 的最小键。最高编号的非空 inner heap 一定是 suffix minimum。
+
+维护一个 bit vector \(b\)，其中
+
+\[
+b_i=1
+\]
+
+表示 \(H_i\) 是 suffix minimum。于是，全局最小元素所在的 inner heap 就是最小编号的 1-bit，也就是 \(\texttt{next}(1)\)。
+
+bit vector 需要支持：
+
+\begin{itemize}
+  \item 读写某一位；
+  \item \texttt{next(i)}：找到不小于 \(i\) 的第一个 1-bit；
+  \item \texttt{prev(i)}：找到不大于 \(i\) 的最后一个 1-bit。
+\end{itemize}
+
+由于 inner heap 数量只有 \(O(\log\log n)\)，这个 bit vector 非常短，可以放在一个机器字中。于是读写、\texttt{next}、\texttt{prev} 都可以在 RAM 模型下 \(O(1)\) 完成。
+
+每次 \texttt{delete-min}、\texttt{decrease-key} 或 \texttt{insert} 可能改变若干 inner heaps 的 suffix-minimum 状态，因此需要更新 bit vector。Lemma 10.8 说明：维护这个 bit vector 的总代价也在 working-set bound 内。直觉是：如果更新涉及较高编号的 inner heap，说明对应元素的 working set 已经足够大，可以支付这部分代价；而 decrease-key 中把 bit 从 1 改成 0 的代价，可以摊还到之前把它从 0 改成 1 的事件上。
+
+\subsection*{10.5 重建堆}
+
+最后一个问题是空间和预估规模。outer heap 的实现使用的空间和总插入次数 \(n\) 有关，而不是只和当前堆中元素数有关。如果很多元素已经被删除，数据结构占用的空间可能相对当前堆大小过大。bit vector 和 fixed-tree union 也需要一个 \(n\) 的上界。
+
+标准做法是 rebuild：当当前堆大小下降到某个比例，或者自上次重建以来插入次数过多时，完全重建数据结构。重建代价和当前数据结构大小成线性，可以摊还到操作序列中，不影响前面的摊还复杂度。
+
+如果使用 rebuild，需要维护堆中元素的插入顺序，以便重建时按正确顺序重新插入。在本文用于 Dijkstra 的场景中，顶点数 \(n\) 事先已知，所以实际上不需要重建。
+
+\subsection*{这一节的意义}
+
+第七到第九节的算法分析都假设存在一个满足 working-set bound、且支持 \texttt{decrease-key} 的堆。第十节证明这个假设不是空的：确实可以用 fast heaps、union-find 和短 bit vector 组合出这样一个堆。
+
+这一节的核心贡献可以概括为：
+
+\begin{itemize}
+  \item 用多个 inner heaps 按插入时间分层；
+  \item 让 inner heap 的大小按双指数增长；
+  \item 用 working-set size 支付较老层中 \texttt{delete-min} 的代价；
+  \item 用 union-find 支持快速找到元素所在 inner heap；
+  \item 用 suffix-minimum bit vector 支持快速找到全局最小 inner heap。
+\end{itemize}
+
+这样，前面 Dijkstra、Dijkstra with lookahead 和 recursive Dijkstra 所依赖的数据结构基础就完整了。
+
+\end{document}
