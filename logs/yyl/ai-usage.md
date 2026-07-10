@@ -21,3 +21,9 @@
 - 使用工具：Codex
 - 提问内容：帮我梳理第 3 节中的关键定义。
 - AI 输出摘要：整理了 distance order、true distance order、forward arc、dominator、useless arc、level 和 bottleneck 的区别与联系。
+
+### 日期：2026-07-10
+
+- 使用工具：ChatGPT
+- 提问内容：帮我解释第 6 节 lower bounds 的证明思路。
+- AI 输出摘要：概括了 `Ω(m)` 时间下界、`Ω(log D)` 决策树下界，以及 `Ω(F - n + 1)` 前向弧比较下界的直觉。

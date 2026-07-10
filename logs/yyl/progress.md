@@ -18,3 +18,9 @@
 - 阅读第 4 节，重新理解 Dijkstra 的三个输出：最短距离、最短路树和 true distance order。
 - 整理堆实现中 `insert`、`decrease-key`、`delete-min` 对复杂度的影响。
 - 理解 Lemma 4.2 中 `F - n + 1` 的来源：`n - 1` 条前向弧负责首次发现顶点，剩余前向弧才可能触发额外比较和 `decrease-key`。
+
+## 2026-07-10
+
+- 阅读第 5-6 节，区分 comparison model 与 time model。
+- 整理下界结论：time model 为 `Ω(m + log D)`，comparison model 为 `Ω(F - n + 1 + log D)`。
+- 对照 Lemma 6.2 和 Lemma 6.4，确认 `log D` 来自信息论决策树下界，`F - n + 1` 来自前向弧长度扰动的不可区分性。
