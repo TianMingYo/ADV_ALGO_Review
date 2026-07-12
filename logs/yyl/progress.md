@@ -24,3 +24,15 @@
 - 阅读第 5-6 节，区分 comparison model 与 time model。
 - 整理下界结论：time model 为 `Ω(m + log D)`，comparison model 为 `Ω(F - n + 1 + log D)`。
 - 对照 Lemma 6.2 和 Lemma 6.4，确认 `log D` 来自信息论决策树下界，`F - n + 1` 来自前向弧长度扰动的不可区分性。
+
+## 2026-07-11
+
+- 阅读第 7 节，重点理解 working-set heap 如何让普通 Dijkstra 达到 `O(m + log D)` 时间。
+- 整理 Lemma 7.3：把每个顶点从插入到删除对应成一个区间，用区间 DAG 的拓扑序数量控制 `sum log W(v)`。
+- 初步确认普通 Dijkstra 在时间模型下已 universally optimal，但比较次数仍有一个与 `n` 有关的差距。
+
+## 2026-07-12
+
+- 阅读第 8 节 Dijkstra with lookahead，重点关注 bottleneck 的作用。
+- 理解 marked / unmarked bottleneck 的区别：unmarked bottleneck 可以沿连续层提前推导真实距离，marked bottleneck 对应后续分叉。
+- 记录算法思路：非 bottleneck 仍放入堆，bottleneck 放入数组 `B` 单独处理，从而把比较次数降到 `O(F - n + 1 + log D)`。
