@@ -20,3 +20,10 @@
 - 确认 distance order 是由图结构允许的顶点顺序，而 true distance order 是给定边权后的真实距离顺序。
 - 记录 Dijkstra 扫描顺序与 true distance order 的关系，以及为什么 distance order problem 可以被单独拿出来分析。
 - 区分 comparison model 和 time model，为后续 Section 6 的下界证明做准备。
+
+## 2026-07-12
+
+- 阅读论文 Section 6，整理 time model 和 comparison model 下的下界证明结构。
+- 梳理 $\Omega(m+\log D)$ 时间下界的来源：算法既需要访问图中的边信息，也需要区分图结构允许的 distance orders。
+- 记录 comparison model 中 $\Omega(F-n+1+\log D)$ 下界的直觉，重点关注额外 forward arcs 带来的比较需求。
+- 理解 Lemma 6.4 中通过扰动边权说明比较次数不足的反例思路。

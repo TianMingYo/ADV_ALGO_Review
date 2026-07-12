@@ -22,3 +22,10 @@
 - 对应文件：`notes/wt/note3.md`
 - 使用内容：使用 AI 辅助梳理 Section 3–5 中几个定义之间的关系，尤其是 distance order、true distance order、$D$、$F$ 和 universal optimality 的联系。AI 主要用于检查概念表述是否前后矛盾。
 - 核验方式：具体定义和结论仍然以论文原文为准。
+
+## 2026-07-12
+
+- 使用工具：GPT 网页版
+- 对应文件：`notes/wt/note4.md`
+- 使用内容：使用 AI 辅助梳理 Section 6 的证明结构，重点是区分 $\Omega(m)$、$\Omega(\log D)$ 和 $\Omega(F-n+1)$ 三个来源。
+- 核验方式：AI 帮助将 Lemma 6.4 的证明思路整理成更直观的说法，但具体结论和符号仍然以论文原文为准。
