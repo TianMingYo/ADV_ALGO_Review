@@ -27,3 +27,10 @@
 - 梳理 $\Omega(m+\log D)$ 时间下界的来源：算法既需要访问图中的边信息，也需要区分图结构允许的 distance orders。
 - 记录 comparison model 中 $\Omega(F-n+1+\log D)$ 下界的直觉，重点关注额外 forward arcs 带来的比较需求。
 - 理解 Lemma 6.4 中通过扰动边权说明比较次数不足的反例思路。
+
+## 2026-07-13
+
+- 阅读论文 Section 7，并结合 Section 10 理解 working-set heap 的高层设计。
+- 梳理 Dijkstra 使用 working-set heap 后达到 $O(m+\log D)$ 时间上界的证明主线。
+- 记录 working-set 区间、interval DAG、search tree 与 distance order 数量 $D$ 之间的关系。
+- 整理分层内层堆、union-find 和 bit vector 在 working-set heap 中各自承担的作用。

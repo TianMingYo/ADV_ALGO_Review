@@ -29,3 +29,10 @@
 - 对应文件：`notes/wt/note4.md`
 - 使用内容：使用 AI 辅助梳理 Section 6 的证明结构，重点是区分 $\Omega(m)$、$\Omega(\log D)$ 和 $\Omega(F-n+1)$ 三个来源。
 - 核验方式：AI 帮助将 Lemma 6.4 的证明思路整理成更直观的说法，但具体结论和符号仍然以论文原文为准。
+
+## 2026-07-13
+
+- 使用工具：GPT 网页版
+- 对应文件：`notes/wt/note5.md`
+- 使用内容：使用 AI 辅助整理 Section 7 的证明路线，尤其是 working-set 区间、interval DAG、search tree 和 $D$ 之间的关系。AI 还用于将 Section 10 的堆结构概括为高层设计思路。
+- 核验方式：具体定理表述和复杂度界限仍然以论文原文为准。
