@@ -1,0 +1,39 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\begin{document}
+
+\section*{第十一部分：Remarks}
+
+第十一节是全文的收束。作者在这里回顾了本文已经完成的三个主要结果。
+
+第一，作者证明了：如果 Dijkstra 算法使用足够高效的堆实现，那么它在运行时间意义下是 universally optimal 的。这里的 ``足够高效'' 指的是前文构造和分析所需要的 working-set bound。
+
+第二，作者证明了 Dijkstra 的两个扩展版本在运行时间和比较次数两个方面都可以达到 universal optimality。这对应前文的 Dijkstra with lookahead 和 recursive Dijkstra。它们分别处理了普通 Dijkstra 在比较次数模型下还不够强的地方。
+
+第三，作者还补上了前面算法分析所依赖的数据结构基础：第十节构造了一个支持 \texttt{decrease-key} 的 working-set heap。因此，前文关于 heap 效率的假设并不是空的。
+
+这一节随后把视角从本文问题推广出去。作者认为 universal optimality 这个概念可能还能用于其他问题。他们特别提到一个相关问题：single-source, single-target version of the distance order problem。
+
+这个问题可以理解为：除了源点 \(s\) 之外，还给定一个目标点 \(t\)。算法不需要输出从 \(s\) 出发的完整 distance order，而只需要输出一个包含 \(s\) 和 \(t\) 的顶点序列，并且这个序列是某个 distance order 的前缀。
+
+如果用普通 Dijkstra 来做，可以在 \(t\) 从堆中被删除时停止。这样就能得到这个问题的一个解，因为此时已经确定了从 \(s\) 到 \(t\) 所需的那一段距离顺序。
+
+但是，作者指出，要让这个提前停止版本也在该问题上达到 universal optimality，似乎需要更强的 heap 性质。原因是：普通 working-set bound 会把插入到堆里的元素计入 working set，即使这些元素后来从未被删除。而在 single-source single-target 场景中，算法可能在 \(t\) 被删除后就停止，很多已经插入的元素并不会被真正删除。如果分析仍然把这些元素计入 working set，可能就不能准确反映这个更小问题的实际难度。
+
+因此，作者留下了一个 open problem：是否能够设计一种更强的 working-set heap，使它的 bound 不统计那些已经插入但最终没有被删除的元素，同时仍然支持 \(O(1)\) 摊还时间的 \texttt{decrease-key}。
+
+\subsection*{这一节的意义}
+
+第十一节没有再展开新的证明，而是说明本文的证明链条已经完整：
+
+\begin{itemize}
+  \item 用图的结构定义出更细的实例难度；
+  \item 证明对应的下界；
+  \item 证明 Dijkstra 及其扩展可以匹配这些下界；
+  \item 构造所需的 working-set heap；
+  \item 最后指出 universal optimality 还可能推广到更细的最短路变体。
+\end{itemize}
+
+对最终 review 来说，这一节特别适合用于写两部分内容：一是总结本文贡献，二是讨论局限与未来方向。尤其是最后的 open problem，可以作为批判性评价的一部分：本文解决了 single-source distance order 问题上的 universal optimality，但对于 single-source single-target 的提前停止版本，还需要新的数据结构结果。
+
+\end{document}

@@ -37,3 +37,10 @@
 ## 2026-07-09
 * 在 Codex 辅助下初读 section 10，理解在前文铺垫下我们需要一个怎样的 heap，然后如何实现这样的一个 heap。
 * 在 ChatGPT 辅助下学习该堆的实现，梳理该数据结构的原理，考虑如何写进 review 里。
+
+## 2026-07-12
+* 在 Codex 辅助下初读 section 11，基本通读并理解了全文。
+* 思考 open problem。
+
+## 2026-07-13~2026-07-14
+* 整理 related work 相关的 reference 文献。
