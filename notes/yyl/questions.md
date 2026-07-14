@@ -12,3 +12,5 @@
 | 2026-07-10 | `log D` 下界为什么像排序下界？ | Lemma 6.2 | 已解决：不同 distance order 可以对应决策树中的不同叶子，算法必须区分至少 `D` 种可能 | 对照 Lemma 6.2 |
 | 2026-07-11 | working-set size 如何联系到 `D`？ | Lemma 7.3 | 已解决：顶点堆生命周期对应区间，区间 DAG 的拓扑序数量被原图 distance order 数量控制 | 对照 Lemma 7.1、Lemma 7.3 |
 | 2026-07-12 | bottleneck 为什么可以提前处理？ | Section 8 | 已解决：bottleneck 支配更高层顶点，连续 unmarked bottleneck 的距离可以沿层级推出 | 对照 Lemma 8.2、Lemma 8.3、Theorem 8.4 |
+| 2026-07-13 | recursive Dijkstra 和 lookahead 的主要区别是什么？ | Section 9 | 已解决：lookahead 用数组 `B` 直接提前处理 bottleneck，recursive Dijkstra 用多个局部 run 和 finger search tree 维护顺序 | 对照 Section 8-9 |
+| 2026-07-14 | working-set heap 为什么需要 outer / inner 两层结构？ | Section 10 | 已解决：inner heap 提供 fast heap 操作，outer heap 近似维护插入时间顺序，使删除代价能由 working-set size 支付 | 对照 Section 10.1-10.2 |
