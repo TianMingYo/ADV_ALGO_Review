@@ -34,3 +34,10 @@
 - 梳理 Dijkstra 使用 working-set heap 后达到 $O(m+\log D)$ 时间上界的证明主线。
 - 记录 working-set 区间、interval DAG、search tree 与 distance order 数量 $D$ 之间的关系。
 - 整理分层内层堆、union-find 和 bit vector 在 working-set heap 中各自承担的作用。
+
+## 2026-07-14
+
+- 阅读论文 Section 8、Section 9 和 Remarks，整理比较次数达到 universal optimality 的两种方法。
+- 梳理 bottleneck 的定义，以及它为什么可以减少顺序已由图结构决定的顶点所需的比较。
+- 对比 Dijkstra with lookahead 和 recursive Dijkstra 对 bottleneck 的不同处理方式。
+- 总结论文的主要贡献、适用边界，以及最终 review 中需要重点说明的限制。
