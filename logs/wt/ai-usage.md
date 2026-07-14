@@ -22,3 +22,24 @@
 - 对应文件：`notes/wt/note3.md`
 - 使用内容：使用 AI 辅助梳理 Section 3–5 中几个定义之间的关系，尤其是 distance order、true distance order、$D$、$F$ 和 universal optimality 的联系。AI 主要用于检查概念表述是否前后矛盾。
 - 核验方式：具体定义和结论仍然以论文原文为准。
+
+## 2026-07-12
+
+- 使用工具：GPT 网页版
+- 对应文件：`notes/wt/note4.md`
+- 使用内容：使用 AI 辅助梳理 Section 6 的证明结构，重点是区分 $\Omega(m)$、$\Omega(\log D)$ 和 $\Omega(F-n+1)$ 三个来源。
+- 核验方式：AI 帮助将 Lemma 6.4 的证明思路整理成更直观的说法，但具体结论和符号仍然以论文原文为准。
+
+## 2026-07-13
+
+- 使用工具：GPT 网页版
+- 对应文件：`notes/wt/note5.md`
+- 使用内容：使用 AI 辅助整理 Section 7 的证明路线，尤其是 working-set 区间、interval DAG、search tree 和 $D$ 之间的关系。AI 还用于将 Section 10 的堆结构概括为高层设计思路。
+- 核验方式：具体定理表述和复杂度界限仍然以论文原文为准。
+
+## 2026-07-14
+
+- 使用工具：GPT 网页版
+- 对应文件：`notes/wt/note6.md`
+- 使用内容：使用 AI 辅助梳理 Section 8 和 Section 9 的共同主线，尤其是 bottleneck 为什么能减少比较次数，以及 Dijkstra with lookahead 和 recursive Dijkstra 的区别。AI 还用于整理最终 review 可能采用的结构。
+- 核验方式：相关算法结论和复杂度表述仍然以论文原文为准。
