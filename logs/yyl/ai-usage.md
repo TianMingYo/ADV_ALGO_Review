@@ -39,3 +39,9 @@
 - 使用工具：ChatGPT
 - 提问内容：帮我梳理 Dijkstra with lookahead 的算法流程。
 - AI 输出摘要：总结了 bottleneck 的 marked / unmarked 分类、数组 `B` 的作用，以及 Case 1、Subcase 2a、Subcase 2b 的处理方式。
+
+### 日期：2026-07-14
+
+- 使用工具：Codex
+- 提问内容：帮我整理第 10 节 working-set heap 构造。
+- AI 输出摘要：概括了 outer heap、inner heap、suffix minimum、bit vector 和 disjoint set union 在 heap 实现中的作用。

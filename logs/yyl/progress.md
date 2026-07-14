@@ -36,3 +36,15 @@
 - 阅读第 8 节 Dijkstra with lookahead，重点关注 bottleneck 的作用。
 - 理解 marked / unmarked bottleneck 的区别：unmarked bottleneck 可以沿连续层提前推导真实距离，marked bottleneck 对应后续分叉。
 - 记录算法思路：非 bottleneck 仍放入堆，bottleneck 放入数组 `B` 单独处理，从而把比较次数降到 `O(F - n + 1 + log D)`。
+
+## 2026-07-13
+
+- 阅读第 9 节 recursive Dijkstra，理解它是另一种利用 bottleneck 的方式。
+- 整理递归算法的流程：先沿 bottleneck 递归向高层推进，再按相反方向完成各层 Dijkstra run。
+- 对比第 8 节和第 9 节：lookahead 更直接，recursive Dijkstra 需要 finger search tree 维护最终顺序。
+
+## 2026-07-14
+
+- 阅读第 10-11 节，了解论文构造 working-set heap 的方式。
+- 整理 outer heap / inner heap 的思路：用多个 fast heap 近似维护插入时间顺序，使 `delete-min` 代价和 working-set size 相关。
+- 汇总笔记，形成概念、下界、Dijkstra 上界、lookahead / recursive Dijkstra、heap 构造几个部分。
