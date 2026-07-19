@@ -296,3 +296,30 @@ O(log d)
 - 使用工具：Codex
 - 提问内容：帮我初始化一个review的tex目录
 - AI 输出摘要：见 `drafts/review`（未生成实际内容，只生成了框架）。
+
+### 日期：2026-07-19
+
+- 使用工具：Codex
+- 提问内容：审查section 06，给出修改意见。
+- AI 输出摘要：
+在 6.1 节中，原稿对 (\Omega(F-n+1)) 下界只给出了直观解释，缺少可验证的证明过程。根据建议，补充了线性约束与变量自由度的核心思路：选取具有 (F) 条前向弧的 distance order，若算法只进行了至多 (F-n) 次比较，则这些比较只产生有限个线性约束；再固定实际存在的相邻前向弧长度后，约束总数仍少于前向弧变量数，因此可以沿非零方向调整边权，在保持比较结果不变的同时使原输出顺序失效，从而得到矛盾。后续还进一步修正了表述，将“加入 (n-1) 个相邻顶点距离约束”改为“对实际存在的相邻前向弧加入至多 (n-1) 个长度约束”，避免表述过强。
+
+在 6.2 节中，AI 建议补充 Dijkstra 扫描顺序正确性的标准反证法，并统一使用 (d^*(v)) 表示真实距离、(\hat d(v)) 表示暂定距离，避免符号混用。Working-set 部分则进一步明确了顶点从插入到删除的生命周期区间 ([a_i,b_i])、working-set size (W(v_i)=b_i-a_i+1)，以及 interval DAG 的构造。通过说明 interval DAG 的每个拓扑序都会尊重 Dijkstra 生成的搜索树，而搜索树的拓扑序又对应原图的 distance order，补全了
+[
+\sum_v \log W(v)=O(\log D)
+]
+的证明链。
+
+在 6.3 节中，原稿只说明了 Lookahead 如何处理 bottleneck，但复杂度分析不够完整。根据建议，补充了
+[
+\log D\ge (n-b)/2
+]
+的推导，其中 (b) 为 bottleneck 数量。该结论说明非 bottleneck 顶点数量 (n-b) 本身可以由 (O(\log D)) 支付。随后又补充了两部分记账：一是把 bottleneck 虚拟地视为立即插入、立即删除的堆元素，从而复用 working-set 分析控制全部 delete-min 成本；二是为每个非 bottleneck 顶点定义其跨过的 bottleneck 集合 (B(v))，利用
+[
+D\ge \prod_v (|B(v)|+1)
+]
+控制数组 (B) 上指数搜索和二分搜索的总代价。
+
+在 6.4 节中，AI 建议明确 Recursive Dijkstra 并不是在整张图上重复运行。修改后说明了算法使用全局的 scanned/labeled 状态，每个顶点只扫描一次；较高层 bottleneck 对应的递归运行若改进了较低层局部堆中的顶点，则直接在该顶点当前所属堆中执行 decrease-key。Finger search 部分也修正了区间定义：若扫描顺序为 (v_1,\ldots,v_n)，且 (p(v_i)=v_j)，则使用区间 ([j+1,i])，而不是父亲在当前列表中的位置。除此之外，还补充了多个局部堆 delete-min 成本的合并方法：将每个 marked bottleneck 对应的局部搜索树单独分析，再利用全局拓扑序数量至少为各局部拓扑序数量之积，将总代价控制在 (O(\log D))。
+
+在 6.5 节中，AI 建议进一步区分 outer heap 和 inner heap 的操作。修改后明确 outer heap 不对外支持 meld，meld 只发生在 insert 过程中，用来合并两个 inner fast heaps。同时修正了“逐层 meld”的描述：一次插入只找到满足大小条件的最小下标 (j)，至多执行一次 meld，再对更年轻的 inner heaps 重新编号。Union-find 部分也补充说明，inner heaps 合并时执行 unite，decrease-key 通过 find 定位元素所属堆；删除时不拆分集合，其额外查找成本在 Dijkstra 的操作序列中可以摊入该元素最终的 delete-min 成本。

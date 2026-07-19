@@ -1,1 +1,72 @@
 \section*{6. 关键技术细节}
+\subsection*{6.1 下界}
+\(\Omega(m)\) 下界来自输入访问。若算法没有检查某条可能影响距离顺序的边，就可以通过调整这条边的长度制造一个与算法输出冲突的实例。
+
+\(\Omega(\log D)\) 是决策树下界。固定图可能产生 \(D\) 个 distance order，对每个 order 都能构造边权使其成为目标输出。正确算法必须区分这些叶子，因此比较深度至少为 \(\log D\)。
+
+\(\Omega(F-n+1)\) 的作用是补上 \(\log D\) 之外的前向弧信息。这里不能简单理解成每条额外前向弧都必然对应一次比较；更准确地说，\(F-n+1\) 是论文在比较下界和 Dijkstra 比较次数分析中共同使用的图参数，用来度量基本可达性之外的前向弧自由度。
+
+这个下界的核心是变量数和约束数的比较。选取一个有 \(F\) 条 forward arcs 的 distance order \(L=[v_1,\ldots,v_n]\)，并给前向弧 \(v_i v_j\) 赋长度 \(j-i\)。若某个算法只做至多 \(F-n\) 次比较，那么这些比较最多固定 \(F-n\) 个线性约束；再加入 \(n-1\) 个相邻顶点距离差约束，约束总数仍少于 \(F\) 个前向弧长度变量。于是还存在一个非零扰动方向，可以保持算法见到的比较结果不变，同时逐步改变某些前向弧长度。沿这个方向移动到某条非相邻前向弧长度变为零时，算法的比较记录没有变化，但原顺序 \(L\) 已不再是正确的 true distance order；算法若仍输出 \(L\)，就会出错。
+
+\subsection*{6.2 Dijkstra 与 working-set bound}
+Dijkstra 的扫描顺序确实是 true distance order。证明可以用通常的反证法：设当前被 \texttt{delete-\allowbreak{}min} 取出的顶点是 \(u\)，但仍有未扫描顶点 \(v\) 满足 \(d(v)<d(u)\)。取一条从 \(s\) 到 \(v\) 的最短路，并令 \(x\) 是这条路上第一个尚未扫描的顶点，\(y\) 是它的前驱。由于 \(y\) 已经扫描过，松弛边 \((y,x)\) 后有 \(\hat d(x)\le d(x)\le d(v)<d(u)\le \hat d(u)\)，这与 \(u\) 是队列中估计距离最小的顶点矛盾。
+
+运行中，堆里保存 labeled 但尚未 scanned 的顶点。在固定的扫描顺序下，只有从较早扫描顶点指向较晚扫描顶点的弧，才可能参与对后续标签的有效更新。论文把每个非源点所需的一条基本前驱弧与其余前向弧分开，后者进入 \(F-n+1\) 项。这里不能理解成每条额外前向弧都机械对应一次比较；更准确地说，\(F-n+1\) 是下界和 Dijkstra 比较次数分析中共同使用的图参数。
+
+\texttt{delete-\allowbreak{}min} 的分析更细。设 Dijkstra 的插入序列为 \(v_1,\ldots,v_n\)。对 \(v_i\)，令 \(a_i=i\)，令 \(b_i\) 表示它被删除时已经插入的最后一个顶点下标，那么 \(v_i\) 的堆生命周期就是区间 \([a_i,b_i]\)，并且 \(W(v_i)=b_i-a_i+1\)。\texttt{decrease-\allowbreak{}key} 只改变 key，不改变这个区间的左右端点。
+
+这些区间构成一个 interval DAG \(I\)：若区间 \(i\) 在区间 \(j\) 开始前已经结束，即 \(b_i<a_j\)，就加弧 \(i\to j\)。论文引用的区间 DAG 引理给出 \(\sum_i \log(b_i-a_i+1)=\mathrm{O}(\log \#\mathrm{Top}(I))\)， 其中 \(\#\mathrm{Top}(I)\) 是 \(I\) 的拓扑序数量。剩下要做的是把 \(\#\mathrm{Top}(I)\) 接到图本身的 \(D\)。
+
+令 \(T\) 为 Dijkstra 第一次标记每个顶点时形成的树。如果树边是 \(v_i\to v_j\)，那么 \(v_i\) 已经被删除后，\(v_j\) 才因扫描这条边而第一次插入堆，所以 \(b_i<a_j\)，这条树边也是 interval DAG 中的边。于是，\(I\) 的任意拓扑序都尊重 \(T\)。根据论文第 3 节的判定，一个有根树的任意拓扑序都是原图的 distance order，因此 \(\#\mathrm{Top}(I)\le D\)。合在一起就得到 \(\sum_v \log W(v)=\mathrm{O}(\log D)\)。这一步把 working-set heap 的局部删除代价转化成了固定图可产生的顺序数量。
+
+\subsection*{6.3 Lookahead}
+Lookahead 版本先按无权层数处理图。这里 \(\ell(v)\) 是从 \(s\) 到 \(v\) 的路径中最少顶点数；若某一层只有一个顶点，它就是 bottleneck，并且会支配所有更高层顶点。Marked bottleneck 指下一层至少有两个顶点的 bottleneck；unmarked bottleneck 则是最高层顶点，或下一层仍然只有一个顶点的 bottleneck。
+
+算法只把非 bottleneck 放进堆 \(H\)。未处理的 bottleneck 按层数存入数组 \(B\)，\(B\) 一直取到第一个 marked bottleneck 为止。扫描普通顶点时，边松弛仍按 Dijkstra 的方式更新标签；若被更新的是非 bottleneck，就插入 \(H\) 或执行 \texttt{decrease-\allowbreak{}key}，若是 bottleneck，则只更新它在 \(B\) 中的距离记录。
+
+主循环比较两类候选：\(H\) 中最小非 bottleneck 的 tentative distance，以及 \(B\) 中当前 bottleneck 段能够推出的距离。若堆顶更小，就删除并扫描这个非 bottleneck。否则，算法沿 \(B\) 从低层到高层扫描；对连续 unmarked bottleneck，论文用 Lemma 8.3 说明下一个 bottleneck 的真实距离可由前一个 bottleneck 和相应出边得到。若整段 \(B\) 的最大距离仍不超过堆顶，就把整段加入输出序列；否则只加入 \(B\) 中距离不超过堆顶的最长前缀。
+
+正确性可以看成一个安全性引理：当算法把某个 bottleneck \(b\) 加入输出序列时，所有尚未输出的非 bottleneck 顶点 \(x\) 都满足 \(d(b)\le d(x)\)。原因是低层 bottleneck 支配更高层区域，堆顶又代表所有非 bottleneck 候选中的最小 tentative distance；算法只有在显式比较后才推进 bottleneck 段。因此提前输出这些 bottleneck 不会打乱 true distance order。
+
+复杂度还要解释为什么堆里剩下的非 bottleneck 不会太多。设图中有 \(b\) 个 bottleneck，level 总数为 \(r\)。每个不含 bottleneck 的 level 至少有两个顶点，所以 \(r\le (n+b)/2\)。取一棵 BFS 树后，在同一 level 内任意排列顶点，可以得到至少 \(\prod_i |V_i|!\ge 2^{n-r}\) 个树的拓扑序，也就是原图的 distance orders。于是 \(\log D\ge n-r\ge (n-b)/2\)，非 bottleneck 顶点数 \(n-b\) 本身就是 \(\mathrm{O}(\log D)\)。这一步支付了普通堆中非 bottleneck 的基本 \texttt{delete-\allowbreak{}min} 成本。
+
+还有两项记账容易被略过。对 \texttt{delete-\allowbreak{}min}，论文把 bottleneck 也虚拟地看成“立即插入、立即删除”的元素，再复用 working-set bound 的区间论证，得到总成本仍为 \(\mathrm{O}(\log D)\)。对数组 \(B\) 中的指数搜索和二分搜索，给每个非 bottleneck 顶点 \(v\) 记下它跨过的 bottleneck 集合 \(B(v)\)；不同选择会产生至少 \(\prod_v (|B(v)|+1)\) 个 distance orders，因此搜索成本 \(\sum_v \log(|B(v)|+1)\) 也能由 \(\mathrm{O}(\log D)\) 控制。
+
+\subsection*{6.4 Recursive Dijkstra}
+Recursive Dijkstra 把 bottleneck 当作递归边界。初始化时，所有 bottleneck 已按层数放入列表 \(L\)。调用 \(\operatorname{Dijkstra}(u)\) 时，算法为这个源点建立一个局部堆，先扫描 \(u\)，然后反复删除局部堆的最小顶点；如果删出的顶点是 bottleneck，就以它为新源点递归调用 \(\operatorname{Dijkstra}(v)\)，否则扫描它并把它插入最终列表 \(L\)。
+
+这里的递归不是在整张图上反复重跑 Dijkstra。算法维护全局的 scanned/\allowbreak{}labeled 状态，每个顶点只扫描一次，相关出边也只由负责它的那次扫描处理。多个局部堆表示的是被 bottleneck 切开的若干前沿；较高 level 的 bottleneck 所对应的递归运行在扫描边时，可能改进一个已经存放在较低 level 递归堆中的顶点。此时算法直接在该顶点当前所属的堆中执行 \texttt{decrease-\allowbreak{}key}，而不是把它移动到当前堆。这样递归深度不会把 \(m\) 乘起来。
+
+维护 \(L\) 要用 finger search tree。正确性上，非 bottleneck 顶点 \(v\) 被扫描时，它的父亲 \(p(v)\) 已在 \(L\) 中，且 \(d(p(v))\le d(v)\)。算法从 \(p(v)\) 附近向后搜索第一个距离至少为 \(d(v)\) 的顶点，把 \(v\) 插在它前面；前后距离关系保证了 \(L\) 仍按真实距离非递减排列。
+
+复杂度上，令 \(v_1,\ldots,v_n\) 为顶点的扫描顺序。若 \(p(v_i)=v_j\)，则为 \(v_i\) 定义区间 \([j+1,i]\)。Finger search 的秩距离至多由这个区间长度控制，所以插入代价是 \(\mathrm{O}(1+\log(i-j))\)。再对这些区间应用 Lemma 7.1，就能把所有插入成本控制在 \(\mathrm{O}(\log D)\)。
+
+多个局部堆的 \texttt{delete-\allowbreak{}min} 成本也要合并计算。论文主要考虑 marked bottleneck 对应的递归调用；对每个这样的 bottleneck \(v\)，取搜索树中由该调用负责的局部子树 \(T(v)\)。该局部运行的 working-set 成本可由 \(\mathrm{O}(\log \#\mathrm{Top}(T(v)))\) 控制。全局搜索树的拓扑序数量至少包含这些局部子树拓扑序数量的乘积，取对数后，各局部成本可以相加，最终仍被 \(\mathrm{O}(\log D)\) 吸收。
+
+\subsection*{6.5 Working-set heap}
+Outer heap 由一串 inner heaps 组成：
+
+\(H_1,H_2,\ldots,H_k\)。
+
+编号小的 heap 放较新元素，编号大的 heap 放较旧元素。每个 inner heap 可用 Fibonacci heap、hollow heap 或 rank-pairing heap 这类 fast heap 实现。插入新元素时先建立 \(H_0\)，再检查相邻层是否可以 meld。大小阈值采用双指数形式，大致保持 \(|H_i|\le 2^{2^i}\)，从而保证层数只有 \(\mathrm{O}(\log\log n)\)。
+
+Outer heap 对外不提供 \texttt{meld}；下表中的 meld 只指 \texttt{insert} 过程中对两个 inner fast heaps 的内部合并。
+
+各操作的运转方式可以概括如下：
+
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.28}
+\begin{tabularx}{\textwidth}{>{\hsize=.95\hsize}Y >{\hsize=1.45\hsize}Y >{\hsize=.60\hsize}Y}
+\toprule
+\textbf{操作} & \textbf{做法} & \textbf{摊还代价} \\
+\midrule
+\texttt{insert(x)} & 新建最年轻层，必要时按大小阈值逐层 meld 和重新编号 & \(\mathrm{O}(1)\) \\
+\texttt{decrease-\allowbreak{}key(x)} & 用 union-find 定位 \(x\) 所在 inner heap，在内部减键并更新外层最小值信息 & \(\mathrm{O}(1)\) \\
+\texttt{find-\allowbreak{}min()} & 通过 suffix-minimum bit vector 找到含全局最小 key 的 inner heap & \(\mathrm{O}(1)\) \\
+\texttt{delete-\allowbreak{}min(x)} & 在对应 inner heap 中删除 \(x\)，再更新该层及更年轻层的 suffix minimum 标记 & \(\mathrm{O}(\log W(x))\) \\
+内部 \texttt{meld} & 仅在 \texttt{insert} 中合并满足大小条件的相邻 inner heaps，并同步执行一次集合 \texttt{unite} & 计入 \texttt{insert} 的摊还代价 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\texttt{delete-\allowbreak{}min} 不会把 inner heap 分裂，只是在内部删除元素并修正外层索引；真正改变分层结构的主要是后续插入触发的内部 meld 和 reindex。Inner heaps 合并时，对应的元素集合执行一次 \texttt{unite}；\texttt{decrease-\allowbreak{}key(x)} 通过 \texttt{find(x)} 找到 \(x\) 所属的 inner heap。论文不在元素删除时同步拆分集合。对 Dijkstra 产生的操作序列，查找过程中产生的额外父指针变化可摊入该元素最终的 \(\mathrm{O}(\log W(x))\) 删除代价；在允许元素长期不被删除的一般情形下，作者再使用 fixed-tree set union 获得严格的 \(\mathrm{O}(1)\) 摊还界。Suffix-minimum bit vector 的常数时间依赖 word-RAM 操作，以及 inner heap 数量只有 \(\mathrm{O}(\log\log n)\) 这一事实；若 \(n\) 事先未知，论文还用重建技巧维持空间和字长假设。
