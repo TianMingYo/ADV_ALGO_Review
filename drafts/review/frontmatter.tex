@@ -1,0 +1,12 @@
+\begin{center}
+  {\zihao{2}\bfseries Universal Optimality of Dijkstra via Beyond-Worst-Case Heaps\par}
+  \vspace{0.45em}
+  {\zihao{3}\bfseries 论文评述\par}
+\end{center}
+\vspace{0.8em}
+\begin{abstract}
+Haeupler、Hladik、Rozhon、Tarjan 和 Tetek 的 \emph{Universal Optimality of Dijkstra via Beyond-Worst-Case Heaps} 研究 Dijkstra 算法在 beyond-worst-case 视角下的最优性。本文评述以 2025 年 5 月 7 日发布的 arXiv v4 扩展版为准；该版本在 FOCS 2024 会议论文基础上重写并改进了若干证明。文章讨论的核心任务是 distance order problem：给定源点 \(s\)，输出顶点按照从 \(s\) 出发的真实距离非递减排列的顺序。这个任务弱于完整 SSSP，因为它不要求输出所有距离数值；但它保留了 Dijkstra 算法最关键的扫描顺序，也适合用比较次数和图拓扑本身的顺序自由度来衡量。
+
+文章证明，在合适的 priority queue 支持下，普通 Dijkstra 在运行时间上已经达到 universal optimality；进一步处理图中的 bottleneck 后，Dijkstra 的两个扩展版本还能在比较次数上达到相应下界。除了下界和算法，作者还构造了支持 \texttt{decrease-\allowbreak{}key} 的 working-set heap，使时间上界不依赖额外的数据结构假设。文章关注的并非继续改进一般图上的 worst-case 上界，而是解释固定拓扑如何影响 Dijkstra 的图相关复杂度。
+
+\end{abstract}

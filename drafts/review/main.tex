@@ -1,0 +1,71 @@
+\documentclass[UTF8,zihao=-4,a4paper]{ctexart}
+
+\usepackage{fontspec}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs,tabularx,array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage[hidelinks,unicode]{hyperref}
+\usepackage{bookmark}
+
+\geometry{top=2.45cm,bottom=2.45cm,left=2.65cm,right=2.65cm,headheight=15pt}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{Noto Sans Mono}
+\setCJKmainfont{Noto Serif CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+\setCJKmonofont{Noto Sans Mono CJK SC}
+
+\setstretch{1.35}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{3em}
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{2}
+
+\ctexset{
+  section={format=\Large\bfseries,beforeskip=1.35ex plus .3ex,afterskip=.8ex},
+  subsection={format=\large\bfseries,beforeskip=1.15ex plus .2ex,afterskip=.65ex}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\renewcommand{\abstractname}{摘\quad 要}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\hypersetup{
+  pdftitle={Universal Optimality of Dijkstra via Beyond-Worst-Case Heaps 论文评述},
+  pdfcreator={XeLaTeX}
+}
+
+\begin{document}
+
+\input{frontmatter}
+
+\input{sections/01_problem}
+
+\input{sections/02_importance}
+
+\input{sections/03_related_work}
+
+\input{sections/04_technical_route}
+
+\input{sections/05_technical_intuition}
+
+\input{sections/06_key_details}
+
+\input{sections/07_contributions_limitations}
+
+\input{sections/08_conclusion}
+
+\input{references}
+
+\end{document}

@@ -284,3 +284,15 @@ O(log d)
 - 使用工具：Codex
 - 提问内容：帮我翻译Section11。
 - AI 输出摘要：见 `drafts/paper-zh/section11-zh.tex`。
+
+### 日期：2026-07-15~2026-07-17
+
+- 使用工具：网页端ChatGPT 5.6 Thinking
+- 提问内容：梳理初读论文中记录在notes中的所有问题
+- AI 输出摘要：太长了且过于零散，略。
+
+### 日期：2026-07-18
+
+- 使用工具：Codex
+- 提问内容：帮我初始化一个review的tex目录
+- AI 输出摘要：见 `drafts/review`（未生成实际内容，只生成了框架）。
