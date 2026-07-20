@@ -41,3 +41,10 @@
 - 梳理 bottleneck 的定义，以及它为什么可以减少顺序已由图结构决定的顶点所需的比较。
 - 对比 Dijkstra with lookahead 和 recursive Dijkstra 对 bottleneck 的不同处理方式。
 - 总结论文的主要贡献、适用边界，以及最终 review 中需要重点说明的限制。
+
+## 2026-07-20
+
+- 完成 review 的 Section 1“论文解决的问题”初稿，并写入 `drafts/review/sections/01_problem.tex`。
+- 整理 distance order、true distance order、$D$、$F$ 和 universal optimality 的定义，说明本文与传统 worst-case 分析的区别。
+- 区分 time model 和 comparison model 的计费对象，并给出两个模型下需要匹配的目标复杂度。
+- 本地暂未安装 XeLaTeX，因此这次没有更新 `drafts/review/main.pdf`。
