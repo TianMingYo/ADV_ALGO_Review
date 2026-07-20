@@ -302,6 +302,7 @@ O(log d)
 - 使用工具：Codex
 - 提问内容：审查section 06，给出修改意见。
 - AI 输出摘要：
+
 在 6.1 节中，原稿对 (\Omega(F-n+1)) 下界只给出了直观解释，缺少可验证的证明过程。根据建议，补充了线性约束与变量自由度的核心思路：选取具有 (F) 条前向弧的 distance order，若算法只进行了至多 (F-n) 次比较，则这些比较只产生有限个线性约束；再固定实际存在的相邻前向弧长度后，约束总数仍少于前向弧变量数，因此可以沿非零方向调整边权，在保持比较结果不变的同时使原输出顺序失效，从而得到矛盾。后续还进一步修正了表述，将“加入 (n-1) 个相邻顶点距离约束”改为“对实际存在的相邻前向弧加入至多 (n-1) 个长度约束”，避免表述过强。
 
 在 6.2 节中，AI 建议补充 Dijkstra 扫描顺序正确性的标准反证法，并统一使用 (d^*(v)) 表示真实距离、(\hat d(v)) 表示暂定距离，避免符号混用。Working-set 部分则进一步明确了顶点从插入到删除的生命周期区间 ([a_i,b_i])、working-set size (W(v_i)=b_i-a_i+1)，以及 interval DAG 的构造。通过说明 interval DAG 的每个拓扑序都会尊重 Dijkstra 生成的搜索树，而搜索树的拓扑序又对应原图的 distance order，补全了
@@ -323,3 +324,25 @@ D\ge \prod_v (|B(v)|+1)
 在 6.4 节中，AI 建议明确 Recursive Dijkstra 并不是在整张图上重复运行。修改后说明了算法使用全局的 scanned/labeled 状态，每个顶点只扫描一次；较高层 bottleneck 对应的递归运行若改进了较低层局部堆中的顶点，则直接在该顶点当前所属堆中执行 decrease-key。Finger search 部分也修正了区间定义：若扫描顺序为 (v_1,\ldots,v_n)，且 (p(v_i)=v_j)，则使用区间 ([j+1,i])，而不是父亲在当前列表中的位置。除此之外，还补充了多个局部堆 delete-min 成本的合并方法：将每个 marked bottleneck 对应的局部搜索树单独分析，再利用全局拓扑序数量至少为各局部拓扑序数量之积，将总代价控制在 (O(\log D))。
 
 在 6.5 节中，AI 建议进一步区分 outer heap 和 inner heap 的操作。修改后明确 outer heap 不对外支持 meld，meld 只发生在 insert 过程中，用来合并两个 inner fast heaps。同时修正了“逐层 meld”的描述：一次插入只找到满足大小条件的最小下标 (j)，至多执行一次 meld，再对更年轻的 inner heaps 重新编号。Union-find 部分也补充说明，inner heaps 合并时执行 unite，decrease-key 通过 find 定位元素所属堆；删除时不拆分集合，其额外查找成本在 Dijkstra 的操作序列中可以摊入该元素最终的 delete-min 成本。
+
+### 日期：2026-07-20
+
+- 使用工具：Codex
+- 提问内容：审查section 07，给出修改意见。
+- AI 输出摘要：
+
+针对 Section 7“技术贡献与局限”部分，AI 建议主要从以下几个方面进行优化。
+
+首先，应进一步说明论文为什么能够证明 universal optimality，而不仅仅是说明算法运行得较快。建议突出上下界使用同一组参数这一点：(\log D) 同时出现在信息论下界和 working-set 上界中，(F-n+1) 同时出现在比较下界和额外松弛比较的上界分析中。只有当上下界能够在同一组参数上匹配时，才能说明算法达到 universal optimality。
+
+其次，应具体解释 bottleneck 技术的作用。普通 Dijkstra 在 comparison model 中仍可能产生接近 (n) 的额外比较，因为一些顶点的相对顺序已经由图拓扑基本确定，但算法仍把它们作为普通堆元素处理。建议说明 Lookahead 通过单独处理连续 bottleneck，Recursive Dijkstra 通过把 bottleneck 作为递归边界，分别减少了这些冗余比较。
+
+对于 working-set heap，建议不要只评价其“结构复杂”或“理论意义较强”，而要说明它在主定理中的必要性。如果只是假设存在支持 decrease-key 的 working-set heap，那么普通 Dijkstra 的时间上界仍是条件性的。第 10 节真正构造了这种数据结构，才使 universal optimality 的时间结论完整成立。
+
+在局限性方面，建议增加对参数 (D) 和 (F) 可计算性的讨论。这两个参数适合用于理论分析，但不像 (n) 和 (m) 那样容易直接获得，因此论文更适合解释 Dijkstra 在固定图拓扑上的适应性，而不能直接用来预测某个具体实例的实际运行时间。
+
+还建议讨论 working-set heap 的工程实现成本。虽然其摊还界较强，但 outer heap、多个 inner heaps、union-find 和 suffix-minimum bit vector 的组合较为复杂。在实际程序中，这种结构未必比普通二叉堆或其他常用优先队列更有优势，因此论文的价值主要体现在理论复杂度而非直接工程应用。
+
+术语方面，建议避免将 universal optimality 简单表述为“实例级最优”。Universal optimality 比较的是固定图拓扑下最坏边权赋值的代价，而 instance optimality 通常针对每一个具体输入实例。可以统一使用“固定图上的最优性”或“在 universal optimality 意义下达到最优”。
+
+最后，建议在局限部分补充 single-source single-target 场景。对于已知目标点 (t) 的情况，Dijkstra 可以在 (t) 被删除时提前终止，但此时堆中可能存在已经插入却没有被删除的元素，原有 working-set 总成本分析无法直接套用。因此，将本文结论推广到提前终止的 (s-t) 查询，需要重新设计或加强所使用的局部性分析。

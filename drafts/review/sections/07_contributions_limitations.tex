@@ -1,1 +1,10 @@
 \section*{7. 技术贡献与局限}
+主定理能够成立，关键在于上下界最终落在同一组参数上。\(\log D\) 同时出现在信息论下界和 working-set 上界中，\(F-n+1\) 同时对应 comparison 下界和 Dijkstra 中可能发生的额外松弛比较。如果上界使用的是另一组无法与下界对应的参数，那么只能说明算法很快，不能说明它 universally optimal。这里 \(\log D\) 和 \(F-n+1\) 同时出现在上下界中，主结论才真正闭合。
+
+Bottleneck 解释了普通 Dijkstra 在 comparison model 中为什么会多出 \(n\) 级别比较：某些顶点的顺序几乎已由拓扑强制，但普通堆实现仍会把它们当作一般顶点比较。Lookahead 直接跳过连续窄通道，recursive Dijkstra 则把窄通道边界变成递归源点。两种算法都说明，比较模型中的困难不只来自边数，也来自哪些顶点的顺序已经被拓扑强制。
+
+第 10 节是主定理不可缺的一环。如果不构造支持 \texttt{decrease-\allowbreak{}key} 的 working-set heap，前面的时间上界只能作为条件性结果。外层分层堆、union-find 和 bit vector 的组合使这个假设落地。不过，这个 heap 的理论性质强，工程实现并不轻。后续 timestamp optimality 相关工作尝试简化这一部分，也从侧面说明原构造的复杂度确实较高。
+
+参数 \(D\) 和 \(F\) 也有使用成本。它们适合证明，但不像 \(n\)、\(m\) 那样容易直接计算。对实际应用来说，这篇文章更接近于解释 Dijkstra 在固定拓扑下的适应性；若要直接预测某次运行时间，仍需要更可计算的实例参数。
+
+第 11 节留下的 single-source single-target 版本也很自然。若目标点 \(t\) 已知，Dijkstra 可以在 \(t\) 被删除时停止；但普通 working-set bound 会统计那些插入过却最终没有删除的元素，分析就不够贴合提前停止过程。要把 universal optimality 推到这个场景，需要更强或重新表述的堆性质。后续 bidirectional Dijkstra 的 instance optimality 工作可以看作这一方向上的相关推进。
