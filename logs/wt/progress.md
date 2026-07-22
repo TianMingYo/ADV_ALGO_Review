@@ -48,3 +48,10 @@
 - 整理 distance order、true distance order、$D$、$F$ 和 universal optimality 的定义，说明本文与传统 worst-case 分析的区别。
 - 区分 time model 和 comparison model 的计费对象，并给出两个模型下需要匹配的目标复杂度。
 - 本地暂未安装 XeLaTeX，因此这次没有更新 `drafts/review/main.pdf`。
+
+## 2026-07-22
+
+- 完成 review 的 Section 2“为什么这个问题重要”。
+- 通过链图和星形图的对比，说明只依赖 $n$、$m$ 的 worst-case 上界无法反映固定图在 distance order 信息量上的差异。
+- 从 Dijkstra 堆操作的局部性出发，说明 working-set bound 为什么适合刻画固定图上的运行代价。
+- 区分 distance order problem 与完整 SSSP，明确本文 universal optimality 结论所针对的任务范围。

@@ -1,1 +1,10 @@
 \section*{2. 为什么这个问题重要}
+Dijkstra 已经有很成熟的 worst-case 分析，但这些分析主要由 \(n\)、\(m\) 和优先队列操作界决定。作者关心的是，这种分析是否遗漏了图拓扑本身提供的顺序信息。固定一张图后，如果它只能产生很少的距离顺序，那么输出 true distance order 所需的信息量也应当更少。
+
+这类差异很难被 worst-case analysis 表达。设想两张图有相同的点数和边数，其中一张图像一条被强约束的通道，另一张图中大量顶点可以交换距离顺序。用同一个 \(\mathrm{O}(m+n\log n)\) 上界描述两者当然正确，但没有反映它们在信息量上的差别。Universal optimality 试图把这种差别纳入复杂度评价：同一个算法在每张固定图上，都接近这张图自身能达到的最优代价。
+
+一个简单例子是链图 \(s\to v_1\to v_2\to\cdots\to v_{n-1}\)。在非负边权下，距离顺序基本由拓扑强制，\(D\) 很小，按 \(n\log n\) 分析 priority queue 就显得过粗。星形图则相反，源点直接连向所有叶子时，只要调节这些边权，叶子几乎可以按任意顺序出现，此时 \(D=(n-1)!\)，\(\log D=\Theta(n\log n)\)；排序级别的比较代价本来就躲不开。这两个图的规模可以相近，但 distance-order 难度完全不同。
+
+更直接的技术问题出现在优先队列上。普通堆通常按当前堆大小计算 \texttt{delete-\allowbreak{}min} 的代价，但 Dijkstra 产生的操作序列有明显局部性：一个顶点可能刚进入堆就被删除，也可能在堆中等待很久。Working-set bound 能区分这两种情况，删除近期插入的元素更便宜，删除等待很久的元素更贵。文章证明，Dijkstra 堆操作序列中的这种局部性最终可以由图中可能的距离顺序数量控制。
+
+Distance order problem 与完整 SSSP 仍有明确区别。完整 SSSP 要输出距离数值，而这里只输出顺序。Duan 等人在 2025 年提出的 directed SSSP 新算法突破了 Dijkstra 在某些模型下的传统界限，但那是完整最短路数值计算的 worst-case 进展。这里讨论的 universal optimality 仍然针对 distance order 这个抽象任务成立。
