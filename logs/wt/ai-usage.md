@@ -59,3 +59,17 @@ AI 首先协助确定了本节的切入方式。初稿没有直接从 universal 
 在 universal optimality 的定义部分，AI 帮助把它与一般 worst-case optimality 和 instance optimality 分开。正文固定图 $G$，用 $\mathrm{OPT}(G)$ 表示所有正确算法在该图全部合法边权赋值上的最小最坏代价；一个统一算法如果对每张固定图都达到 $\mathrm{O}(\mathrm{OPT}(G))$，才称为 universally optimal。这里不是针对每个带权实例临时选择不同算法，而是让同一个算法适应不同固定拓扑的难度。
 
 最后，AI 协助补充了 time model 和 comparison model 的计费差异。Time model 会计算邻接表访问、边扫描、RAM 操作和比较，因此 $m$ 必须出现在复杂度中；comparison model 把图结构视为已知，只计算边长表达式、路径长度或 priority queue key 之间的比较。这样可以避免把 comparison bound 中的 $F-n+1$ 误解为算法只需要查看这些边。完成的初稿见 `drafts/review/sections/01_problem.tex`。
+
+## 2026-07-22
+
+- 使用工具：GPT 网页版
+- 提问内容：根据论文内容和前期阅读笔记，辅助撰写 review 的 Section 2“为什么这个问题重要”。
+- AI 输出摘要：
+
+AI 首先协助确定了本节的论证顺序。正文从传统 worst-case analysis 的局限切入，说明只使用 $n$、$m$ 和优先队列操作界，无法区分固定拓扑已经提供了多少距离顺序信息。这样既能承接 Section 1 对 universal optimality 的定义，也避免再次重复形式化符号。
+
+为了把不同图结构之间的差异写得更直观，AI 协助选取链图和星形图作为对照。链图的距离顺序基本由拓扑强制，$D$ 很小；星形图的叶子可以通过调整边权形成近乎任意的排列，因此 $D=(n-1)!$，且 $\log D=\Theta(n\log n)$。这个例子说明，两张 $n$、$m$ 相近的图可能具有完全不同的 distance-order 难度，统一使用 $O(m+n\log n)$ 描述会掩盖这种差别。
+
+在优先队列部分，AI 帮助把“问题为什么重要”落实到具体的技术矛盾上。普通堆按当前堆规模计算 `delete-min` 的代价，无法区分刚插入就被删除的顶点和长期留在堆中的顶点；working-set bound 则会根据元素进入堆后的局部历史收费。正文由此解释，Dijkstra 操作序列中的局部性为什么可能与固定图可产生的 distance order 数量联系起来。
+
+最后，AI 协助收紧了本节的结论范围。Distance order problem 只要求输出顶点顺序，完整 SSSP 还需要计算距离数值。正文将 directed SSSP 的 worst-case 进展作为对照，说明它与本文针对 distance order 的 universal optimality 研究并不矛盾。完成的内容见 `drafts/review/sections/02_importance.tex`。
