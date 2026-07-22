@@ -1,1 +1,14 @@
 \section*{4. 主要技术路线}
+作者先给出固定图上的时间与比较下界。随后，普通 Dijkstra 通过 working-set heap 匹配时间下界；comparison model 中剩余的差距由 bottleneck 引起，因此还需要 lookahead 或 recursive Dijkstra。第 10 节再构造分析中所需的 heap。
+
+下界给出了 universal optimality 所需匹配的基准。Time model 至少需要 \(\Omega(m)\)，因为算法必须看见足够多输入边。Comparison model 至少需要 \(\Omega(\log D)\)，因为存在 \(D\) 种可能的 distance order 需要区分。额外的 \(\Omega(F-n+1)\) 来自论文对 forward arcs 的组合分析：除基本可达性所需的 \(n-1\) 条前向弧外，剩余前向弧数量控制了比较下界中的另一部分。
+
+普通 Dijkstra 的分析依赖 working-set heap。\texttt{insert} 和 \texttt{decrease-\allowbreak{}key} 都是 \(\mathrm{O}(1)\) 摊还，主要代价集中在 \texttt{delete-\allowbreak{}min}。若顶点 \(v\) 的删除代价为 \(\mathrm{O}(\log W(v))\)，问题变成证明
+
+\(\sum_v \log W(v)=\mathrm{O}(\log D)\)。
+
+作者把每个顶点在堆中的生命周期看成一个区间，再用区间 DAG 的拓扑序数量控制这些对数代价。直观地说，顶点在堆中等待越久，可能与它交换顺序的顶点越多，图能产生的 distance order 数量也越大。
+
+普通 Dijkstra 在 time model 中已经足够，但在 comparison model 中会多出一个接近 \(n\) 的项。这里出现 bottleneck。若某一层只有一个顶点，这个顶点对后续顶点的顺序有很强约束；很多 bottleneck 会让 \(D\) 变小，可普通 Dijkstra 仍可能把它们放进堆里逐个比较。Dijkstra with lookahead 和 recursive Dijkstra 都是在减少这类比较。
+
+第 10 节补上数据结构。若没有支持 \texttt{decrease-\allowbreak{}key} 的 working-set heap，前面的时间上界只能作为条件性结论。作者构造 outer heap，把多个 fast inner heaps 按插入时间分层组织，再用 union-find 定位元素所在的 inner heap，用 suffix-minimum bit vector 定位全局最小元素所在的 inner heap。

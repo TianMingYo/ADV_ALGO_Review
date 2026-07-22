@@ -48,3 +48,7 @@
 - 阅读第 10-11 节，了解论文构造 working-set heap 的方式。
 - 整理 outer heap / inner heap 的思路：用多个 fast heap 近似维护插入时间顺序，使 `delete-min` 代价和 working-set size 相关。
 - 汇总笔记，形成概念、下界、Dijkstra 上界、lookahead / recursive Dijkstra、heap 构造几个部分。
+
+## 2026-07-22
+* 草拟了 section 04 的核心内容，并在 Codex 辅助下对文本内容进行检查与整理。Codex 的相关建议均在 ai-usage.md 中记录。
+* 上传了 section 04 的初稿，等全文基本定稿后再进行打磨优化。
