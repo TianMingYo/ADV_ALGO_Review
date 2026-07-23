@@ -73,3 +73,15 @@ AI 首先协助确定了本节的论证顺序。正文从传统 worst-case analy
 在优先队列部分，AI 帮助把“问题为什么重要”落实到具体的技术矛盾上。普通堆按当前堆规模计算 `delete-min` 的代价，无法区分刚插入就被删除的顶点和长期留在堆中的顶点；working-set bound 则会根据元素进入堆后的局部历史收费。正文由此解释，Dijkstra 操作序列中的局部性为什么可能与固定图可产生的 distance order 数量联系起来。
 
 最后，AI 协助收紧了本节的结论范围。Distance order problem 只要求输出顶点顺序，完整 SSSP 还需要计算距离数值。正文将 directed SSSP 的 worst-case 进展作为对照，说明它与本文针对 distance order 的 universal optimality 研究并不矛盾。完成的内容见 `drafts/review/sections/02_importance.tex`。
+
+## 2026-07-23
+
+- 使用工具：GPT 网页版
+- 提问内容：帮我整理 Section 3“相关研究”的结构，并检查各类相关工作与原论文之间的关系是否清楚。
+- AI 输出摘要：
+
+AI 建议不要按时间顺序逐篇介绍文献，而是围绕原论文涉及的几类技术组织本节。正文据此分为 Dijkstra 与 SSSP、优先队列、自适应数据结构和 universal optimality 几部分。
+
+优先队列部分需要区分 inner heap 提供的基本操作和 outer heap 新增的时间分层。Finger search tree 则应放回 recursive Dijkstra 维护距离顺序列表的过程，而不是单独作为一项背景工作罗列。
+
+会议版之后的工作适合按研究任务和最优性标准比较。正文最后增加了表格，用来区分原论文、Simpler Universally Optimal Dijkstra、Bidirectional Dijkstra 和 directed SSSP 新算法。

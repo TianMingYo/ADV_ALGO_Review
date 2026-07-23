@@ -55,3 +55,10 @@
 - 通过链图和星形图的对比，说明只依赖 $n$、$m$ 的 worst-case 上界无法反映固定图在 distance order 信息量上的差异。
 - 从 Dijkstra 堆操作的局部性出发，说明 working-set bound 为什么适合刻画固定图上的运行代价。
 - 区分 distance order problem 与完整 SSSP，明确本文 universal optimality 结论所针对的任务范围。
+
+## 2026-07-23
+
+- 完成 review 的 Section 3“相关研究”。
+- 按照 Dijkstra 与最短路算法、优先队列、自适应数据结构和 beyond-worst-case analysis 四条线索整理研究背景。
+- 说明 Fibonacci heap 等传统堆结构与本文 working-set heap 的关系，并补充 finger search tree 在比较上界证明中的作用。
+- 整理会议版之后的相关进展，通过对比表区分不同工作的研究任务、最优性标准和主要技术。

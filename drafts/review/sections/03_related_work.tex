@@ -1,1 +1,44 @@
 \section*{3. 相关研究}
+\subsection*{3.1 Dijkstra 与最短路算法}
+Dijkstra 1959 年的算法是这篇文章的起点。传统实现中，使用二叉堆会得到较直接的 \(\mathrm{O}(m\log n)\) 类界；使用 Fibonacci heap 后，\texttt{decrease-\allowbreak{}key} 的摊还代价降为 \(\mathrm{O}(1)\)，理论复杂度可以进一步改善。Fredman 和 Tarjan 的 Fibonacci heap 因此成为最短路算法复杂度分析中的经典工具。
+
+另一条最短路研究线关注更强计算模型或特殊权重情形下的 worst-case 加速，例如 Thorup 关于整数权最短路和 integer priority queue 的工作。近年的 Duan、Mao、Mao、Shu、Yin 结果则继续推进 directed SSSP 的 worst-case 上界。这些工作主要问完整 SSSP 是否能在最坏情况下更快；Haeupler 等人的文章问的是，Dijkstra 对 distance order 任务是否已经按固定图的难度达到最优。
+
+\subsection*{3.2 优先队列与 \texttt{decrease-\allowbreak{}key}}
+Dijkstra 对优先队列非常敏感。Fibonacci heap、pairing heap、rank-pairing heap、hollow heap 都可以放在这条背景线中理解。它们共同处理的是如何高效支持 \texttt{insert}、\texttt{delete-\allowbreak{}min}、\texttt{decrease-\allowbreak{}key} 等操作。
+
+这些堆主要作为背景，而非文章真正比较的对象。它们提供的是 inner heap 所需的基础能力：常数摊还的插入、减键与合并，以及对数级的删除最小值。真正新增的部分在 outer heap 的时间分层。普通 Fibonacci heap 可以给出 \texttt{delete-\allowbreak{}min} 的 \(\mathrm{O}(\log n)\) 摊还界，但这个 \(n\) 是堆规模，不能体现元素进入堆的时间。Working-set heap 要求删除元素 \(x\) 的代价随 \(W(x)\) 变化，同时仍保留 Dijkstra 所需的 \(\mathrm{O}(1)\) 摊还 \texttt{decrease-\allowbreak{}key}。
+
+\subsection*{3.3 自适应数据结构与 finger search}
+Elmasry 的 working-set priority queue、Elmasry、Farzan、Iacono 的 time-finger priority queue，以及 finger search tree，都体现了同一种想法：如果操作序列存在局部性，数据结构不应每次都按全局规模收费。第 9 节中的 recursive Dijkstra 用 finger search tree 维护最终距离顺序列表 \(L\)。非 bottleneck 顶点 \(v\) 被扫描后，会从其父亲 \(p(v)\) 附近寻找插入位置；若位置很近，代价为 \(\mathrm{O}(1+\log k)\)，其中 \(k\) 是局部秩距离。
+
+这个工具在证明里承担实际作用。若每次插入 \(L\) 都从全局平衡树根部搜索，代价会回到 \(\log n\) 级别，无法匹配 \(\mathrm{O}(F-n+1+\log D)\) 的比较下界。Finger search tree 把列表维护代价转成局部距离，再由区间 DAG 论证归入 \(\log D\)。
+
+\subsection*{3.4 Beyond-worst-case 与 universal optimality}
+Beyond-worst-case analysis 试图避免只用输入规模解释算法代价。Roughgarden 的相关著作系统讨论了这一方向。Universal optimality 是其中较强的目标：算法不仅在全体输入的最坏情形下好，还要在每一个固定输入结构上接近最优。
+
+这类思想此前已经出现在分布式图算法中，例如已知拓扑下的 universally optimal distributed algorithms。Haeupler 等人的工作把它推进到顺序图算法，并以 Dijkstra 为核心例子。关于 partial information sorting 的研究也有相近精神：如果输入中已经隐含了部分顺序信息，排序算法应当利用这些信息，避免总按完全无序输入收费。
+
+\subsection*{3.5 会议版之后及扩展版同期的相关进展}
+FOCS 2024 会议版公开后，相关工作继续沿着固定输入结构上的最优性方向推进；2025 年的 arXiv v4 扩展版也吸收了其中一部分新技术。van der Hoog、Rotenberg 和 Rutschmann 的 \emph{Simpler Universally Optimal Dijkstra} 重新表达了原文的堆条件，引入 timestamp optimality，并提供了新版第 7 节所用的 interval-DAG 计数引理。原文的 working-set heap 完成了闭环，后续工作则显示，同一类局部性也可以用更简洁的性质来组织。
+
+Haeupler、Hladik、Rozhon、Tarjan 和 Tetek 的 \emph{Bidirectional Dijkstra's Algorithm is Instance-Optimal} 研究 \(s\text{-}t\) 最短路中的双向搜索，并证明精心实现的 bidirectional Dijkstra 在检查边数意义下具有 instance optimality。这个方向和原文第 11 节提出的 single-source single-target 变体相邻：当目标点 \(t\) 已知时，算法通常不需要完整 distance order。
+
+Universal optimality 也开始进入更多数据结构和排序问题。Berendsohn 的 \emph{Universally Optimal Decremental Tree Minima} 把这一目标用于 decremental tree minima；Sen 的 \emph{Towards universally optimal sorting algorithms} 则从排序角度讨论更一般的 universal optimality。
+
+把这些工作放在一起时，差别大致如下：
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.28}
+\begin{tabularx}{\textwidth}{>{\hsize=.95\hsize}Y >{\hsize=1.05\hsize}Y >{\hsize=1.0\hsize}Y >{\hsize=1.0\hsize}Y}
+\toprule
+\textbf{工作} & \textbf{研究任务} & \textbf{最优性标准} & \textbf{关键工具} \\
+\midrule
+原论文 & single-source distance order & universal optimality & working-set heap、bottleneck \\
+Simpler Universally Optimal Dijkstra & 同一 distance order 问题 & universal optimality & timestamp optimality \\
+Bidirectional Dijkstra & \(s\text{-}t\) 最短路查询 & instance optimality & 双向搜索、边检查数 \\
+Duan 等人的 directed SSSP & 完整 SSSP 数值计算 & worst-case 改进 & 非 Dijkstra 式算法 \\
+\bottomrule
+\end{tabularx}
+\end{center}
