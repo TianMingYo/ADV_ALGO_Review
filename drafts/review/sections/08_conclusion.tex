@@ -1,1 +1,4 @@
 \section*{8. 总结}
+这篇文章最有价值的地方，是把问题从“Dijkstra 在所有图上最坏有多慢”改成“对眼前这张固定图，它是否已经做到最好”。围绕这个问题，作者把 distance order 数量、forward arcs、working-set heap、bottleneck 和 finger search tree 放进同一套分析中。
+
+因此，普通 Dijkstra 已能在 universal optimality 意义下匹配时间下界；若进一步绕开 bottleneck 导致的冗余比较，它也能匹配比较下界。第 10 节构造 working-set heap，使这一结论不再依赖一个未经实现的数据结构假设。即使一个经典算法的 worst-case 上界没有变化，换用更细的复杂度尺度后，仍可能发现新的最优性结论。

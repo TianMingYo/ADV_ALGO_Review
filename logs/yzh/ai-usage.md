@@ -346,3 +346,9 @@ D\ge \prod_v (|B(v)|+1)
 术语方面，建议避免将 universal optimality 简单表述为“实例级最优”。Universal optimality 比较的是固定图拓扑下最坏边权赋值的代价，而 instance optimality 通常针对每一个具体输入实例。可以统一使用“固定图上的最优性”或“在 universal optimality 意义下达到最优”。
 
 最后，建议在局限部分补充 single-source single-target 场景。对于已知目标点 (t) 的情况，Dijkstra 可以在 (t) 被删除时提前终止，但此时堆中可能存在已经插入却没有被删除的元素，原有 working-set 总成本分析无法直接套用。因此，将本文结论推广到提前终止的 (s-t) 查询，需要重新设计或加强所使用的局部性分析。
+
+### 日期：2026-07-24
+
+- 使用工具：Codex
+- 提问内容：结合前文，审查section 08部分，给出修改意见。
+- AI 输出摘要：建议区分普通 Dijkstra 与两个扩展算法各自匹配的下界，明确 working-set heap 支撑的是时间最优性，并稍微收紧结尾措辞。
